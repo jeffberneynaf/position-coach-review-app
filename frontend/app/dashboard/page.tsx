@@ -64,7 +64,7 @@ export default function DashboardPage() {
 
   const handleUpgradeSubscription = async (tierId: number) => {
     try {
-      await api.put('/subscriptions/upgrade', tierId);
+      await api.put('/subscriptions/upgrade', { subscriptionTierId: tierId });
       alert('Subscription updated successfully!');
       fetchDashboardData();
     } catch (err) {

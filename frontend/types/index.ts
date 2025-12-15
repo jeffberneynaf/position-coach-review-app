@@ -102,3 +102,7 @@ export interface UpdateCoachProfileRequest {
   phoneNumber: string;
   yearsOfExperience: number;
 }
+
+export interface UpgradeSubscriptionRequest {
+  subscriptionTierId: number;
+}

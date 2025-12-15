@@ -39,7 +39,7 @@ public class SubscriptionsController : ControllerBase
 
     [Authorize(Roles = "Coach")]
     [HttpPut("upgrade")]
-    public async Task<IActionResult> UpgradeSubscription([FromBody] int subscriptionTierId)
+    public async Task<IActionResult> UpgradeSubscription([FromBody] UpgradeSubscriptionRequest request)
     {
         var coachId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
 
@@ -49,13 +49,13 @@ public class SubscriptionsController : ControllerBase
             return NotFound();
         }
 
-        var tier = await _context.SubscriptionTiers.FindAsync(subscriptionTierId);
+        var tier = await _context.SubscriptionTiers.FindAsync(request.SubscriptionTierId);
         if (tier == null)
         {
             return BadRequest(new { message = "Invalid subscription tier" });
         }
 
-        coach.SubscriptionTierId = subscriptionTierId;
+        coach.SubscriptionTierId = request.SubscriptionTierId;
         coach.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync();

@@ -10,3 +10,8 @@ public class SubscriptionTierDto
     public bool FeaturedListing { get; set; }
     public bool AnalyticsAccess { get; set; }
 }
+
+public class UpgradeSubscriptionRequest
+{
+    public int SubscriptionTierId { get; set; }
+}
