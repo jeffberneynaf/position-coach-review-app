@@ -1,0 +1,68 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-3 fw-bold mb-4">Position Coach Review App</h1>
+    <p class="lead mb-4">Find the best position coaches in your area and read reviews from other athletes</p>
+    
+    <div class="d-flex justify-content-center gap-3 mb-5">
+        <a asp-controller="Coach" asp-action="Index" class="btn btn-primary btn-lg">Find Coaches</a>
+        @if (!User.Identity!.IsAuthenticated)
+        {
+            <a asp-controller="Account" asp-action="Register" class="btn btn-outline-primary btn-lg">Get Started</a>
+        }
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4 text-center mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h3 class="card-title">🔍 Search by Location</h3>
+                <p class="card-text">Find qualified position coaches in your zip code area</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 text-center mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h3 class="card-title">⭐ Read Reviews</h3>
+                <p class="card-text">See what other athletes say about their coaching experience</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 text-center mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h3 class="card-title">✍️ Share Feedback</h3>
+                <p class="card-text">Help others by reviewing coaches you've worked with</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-12 text-center">
+        <h2 class="mb-4">For Coaches</h2>
+        <p class="lead mb-3">Build your reputation and connect with potential clients</p>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h5>Subscription Plans Available</h5>
+                        <p>Choose from Basic, Professional, or Elite tiers to suit your needs</p>
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <a asp-controller="Account" asp-action="Register" class="btn btn-success">Register as Coach</a>
+                        }
+                        else if (User.IsInRole("Coach"))
+                        {
+                            <a asp-controller="Coach" asp-action="Dashboard" class="btn btn-success">Go to Dashboard</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
