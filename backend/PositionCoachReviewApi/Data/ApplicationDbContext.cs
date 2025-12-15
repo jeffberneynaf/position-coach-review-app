@@ -1,0 +1,81 @@
+using Microsoft.EntityFrameworkCore;
+using PositionCoachReviewApi.Models;
+
+namespace PositionCoachReviewApi.Data;
+
+public class ApplicationDbContext : DbContext
+{
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        : base(options)
+    {
+    }
+
+    public DbSet<User> Users { get; set; }
+    public DbSet<Coach> Coaches { get; set; }
+    public DbSet<Review> Reviews { get; set; }
+    public DbSet<SubscriptionTier> SubscriptionTiers { get; set; }
+    public DbSet<Client> Clients { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        // Configure relationships
+        modelBuilder.Entity<Review>()
+            .HasOne(r => r.User)
+            .WithMany(u => u.Reviews)
+            .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Review>()
+            .HasOne(r => r.Coach)
+            .WithMany(c => c.Reviews)
+            .HasForeignKey(r => r.CoachId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Coach>()
+            .HasOne(c => c.SubscriptionTier)
+            .WithMany(s => s.Coaches)
+            .HasForeignKey(c => c.SubscriptionTierId);
+
+        modelBuilder.Entity<Client>()
+            .HasOne(c => c.Coach)
+            .WithMany(c => c.Clients)
+            .HasForeignKey(c => c.CoachId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Seed subscription tiers
+        modelBuilder.Entity<SubscriptionTier>().HasData(
+            new SubscriptionTier
+            {
+                Id = 1,
+                Name = "Free",
+                Price = 0,
+                Description = "Basic listing with limited features",
+                MaxClients = 5,
+                FeaturedListing = false,
+                AnalyticsAccess = false
+            },
+            new SubscriptionTier
+            {
+                Id = 2,
+                Name = "Basic",
+                Price = 29.99m,
+                Description = "Enhanced listing with more client slots",
+                MaxClients = 20,
+                FeaturedListing = false,
+                AnalyticsAccess = true
+            },
+            new SubscriptionTier
+            {
+                Id = 3,
+                Name = "Premium",
+                Price = 79.99m,
+                Description = "Full-featured listing with unlimited clients and featured placement",
+                MaxClients = 999,
+                FeaturedListing = true,
+                AnalyticsAccess = true
+            }
+        );
+    }
+}

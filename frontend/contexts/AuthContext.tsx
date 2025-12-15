@@ -1,0 +1,75 @@
+'use client';
+
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import api from '@/lib/api';
+import { AuthResponse, LoginRequest, RegisterUserRequest, RegisterCoachRequest, User } from '@/types';
+
+interface AuthContextType {
+  user: User | null;
+  loading: boolean;
+  login: (request: LoginRequest, userType: 'user' | 'coach') => Promise<void>;
+  registerUser: (request: RegisterUserRequest) => Promise<void>;
+  registerCoach: (request: RegisterCoachRequest) => Promise<void>;
+  logout: () => void;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Check if user is already logged in
+    const token = localStorage.getItem('token');
+    const userData = localStorage.getItem('user');
+    if (token && userData) {
+      setUser(JSON.parse(userData));
+    }
+    setLoading(false);
+  }, []);
+
+  const login = async (request: LoginRequest, userType: 'user' | 'coach') => {
+    const response = await api.post<AuthResponse>(`/auth/login/${userType}`, request);
+    const { token, ...userData } = response.data;
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(userData));
+    setUser(userData);
+  };
+
+  const registerUser = async (request: RegisterUserRequest) => {
+    const response = await api.post<AuthResponse>('/auth/register/user', request);
+    const { token, ...userData } = response.data;
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(userData));
+    setUser(userData);
+  };
+
+  const registerCoach = async (request: RegisterCoachRequest) => {
+    const response = await api.post<AuthResponse>('/auth/register/coach', request);
+    const { token, ...userData } = response.data;
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(userData));
+    setUser(userData);
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, loading, login, registerUser, registerCoach, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}
