@@ -1,0 +1,6 @@
+@PositionCoachReviewApi_HostAddress = http://localhost:5076
+
+GET {{PositionCoachReviewApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
