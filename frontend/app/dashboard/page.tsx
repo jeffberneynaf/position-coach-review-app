@@ -33,10 +33,10 @@ export default function DashboardPage() {
   const fetchDashboardData = async () => {
     try {
       const [statsRes, clientsRes, reviewsRes, subsRes] = await Promise.all([
-        api.get<DashboardStats>('/dashboard/stats'),
-        api.get<Client[]>('/dashboard/clients'),
-        api.get<Review[]>('/dashboard/reviews'),
-        api.get<SubscriptionTier[]>('/subscriptions'),
+        api.get<DashboardStats>('/api/dashboard/stats'),
+        api.get<Client[]>('/api/dashboard/clients'),
+        api.get<Review[]>('/api/dashboard/reviews'),
+        api.get<SubscriptionTier[]>('/api/subscriptions'),
       ]);
       
       setStats(statsRes.data);
@@ -53,7 +53,7 @@ export default function DashboardPage() {
   const handleAddClient = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post('/dashboard/clients', newClient);
+      await api.post('/api/dashboard/clients', newClient);
       setNewClient({ name: '', email: '', phoneNumber: '' });
       setShowAddClient(false);
       fetchDashboardData();
@@ -64,7 +64,7 @@ export default function DashboardPage() {
 
   const handleUpgradeSubscription = async (tierId: number) => {
     try {
-      await api.put('/subscriptions/upgrade', { subscriptionTierId: tierId });
+      await api.put('/api/subscriptions/upgrade', { subscriptionTierId: tierId });
       alert('Subscription updated successfully!');
       fetchDashboardData();
     } catch (err) {

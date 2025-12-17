@@ -26,7 +26,7 @@ export default function CoachProfilePage() {
 
   const fetchCoach = async () => {
     try {
-      const response = await api.get<CoachProfile>(`/coaches/${params.id}`);
+      const response = await api.get<CoachProfile>(`/api/coaches/${params.id}`);
       setCoach(response.data);
     } catch (err) {
       setError('Failed to load coach profile');
@@ -44,7 +44,7 @@ export default function CoachProfilePage() {
 
     setSubmitting(true);
     try {
-      await api.post('/reviews', {
+      await api.post('/api/reviews', {
         rating,
         comment,
         coachId: params.id,

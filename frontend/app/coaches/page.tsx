@@ -19,7 +19,7 @@ export default function CoachesPage() {
 
   const fetchCoaches = async () => {
     try {
-      const response = await api.get<CoachProfile[]>('/coaches');
+      const response = await api.get<CoachProfile[]>('/api/coaches');
       setCoaches(response.data);
       setFilteredCoaches(response.data);
     } catch (err) {
@@ -36,7 +36,7 @@ export default function CoachesPage() {
     }
 
     try {
-      const response = await api.get<CoachProfile[]>(`/coaches/search?zipCode=${zipCode}`);
+      const response = await api.get<CoachProfile[]>(`/api/coaches/search?zipCode=${zipCode}`);
       setFilteredCoaches(response.data);
     } catch (err) {
       setError('Failed to search coaches');

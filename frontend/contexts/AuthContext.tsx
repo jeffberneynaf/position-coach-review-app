@@ -30,7 +30,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = async (request: LoginRequest, userType: 'user' | 'coach') => {
-    const response = await api.post<AuthResponse>(`/auth/login/${userType}`, request);
+    const response = await api.post<AuthResponse>(`/api/auth/login/${userType}`, request);
     const { token, ...userData } = response.data;
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(userData));
@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const registerUser = async (request: RegisterUserRequest) => {
-    const response = await api.post<AuthResponse>('/auth/register/user', request);
+    const response = await api.post<AuthResponse>('/api/auth/register/user', request);
     const { token, ...userData } = response.data;
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(userData));
@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const registerCoach = async (request: RegisterCoachRequest) => {
-    const response = await api.post<AuthResponse>('/auth/register/coach', request);
+    const response = await api.post<AuthResponse>('/api/auth/register/coach', request);
     const { token, ...userData } = response.data;
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(userData));
