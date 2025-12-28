@@ -53,9 +53,11 @@ export default function LoginPage() {
     setError('');
 
     try {
+      // Match backend expectations: "User" or "Coach"
+      const userTypeCapitalized = userType === 'user' ? 'User' : 'Coach';
       await api.post('/api/auth/resend-verification', {
         email,
-        userType: userType.charAt(0).toUpperCase() + userType.slice(1), // Capitalize first letter
+        userType: userTypeCapitalized,
       });
       setResendMessage('Verification email sent! Please check your inbox.');
       setShowResendVerification(false);

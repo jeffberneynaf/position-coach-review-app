@@ -40,7 +40,12 @@ public class EmailService : IEmailService
             var fromEmail = _configuration["Email:FromEmail"] ?? "noreply@positioncoach.com";
             var fromName = _configuration["Email:FromName"] ?? "Position Coach Review";
             var smtpHost = _configuration["Email:SmtpHost"] ?? "smtp.gmail.com";
-            var smtpPort = int.Parse(_configuration["Email:SmtpPort"] ?? "587");
+            
+            if (!int.TryParse(_configuration["Email:SmtpPort"], out int smtpPort))
+            {
+                smtpPort = 587; // Default SMTP port
+            }
+            
             var smtpUsername = _configuration["Email:SmtpUsername"];
             var smtpPassword = _configuration["Email:SmtpPassword"];
 
