@@ -10,6 +10,7 @@ export default function CoachesPage() {
   const [coaches, setCoaches] = useState<CoachProfile[]>([]);
   const [filteredCoaches, setFilteredCoaches] = useState<CoachProfile[]>([]);
   const [zipCode, setZipCode] = useState('');
+  const [radius, setRadius] = useState('10');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -36,7 +37,7 @@ export default function CoachesPage() {
     }
 
     try {
-      const response = await api.get<CoachProfile[]>(`/api/coaches/search?zipCode=${zipCode}`);
+      const response = await api.get<CoachProfile[]>(`/api/coaches/search?zipCode=${zipCode}&radius=${radius}`);
       setFilteredCoaches(response.data);
     } catch (err) {
       setError('Failed to search coaches');
@@ -54,29 +55,49 @@ export default function CoachesPage() {
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold mb-8">Find a Coach</h1>
 
-        <div className="mb-8 flex gap-4">
-          <input
-            type="text"
-            placeholder="Enter zip code..."
-            value={zipCode}
-            onChange={(e) => setZipCode(e.target.value)}
-            className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-          />
-          <button
-            onClick={handleSearch}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
-          >
-            Search
-          </button>
-          <button
-            onClick={() => {
-              setZipCode('');
-              setFilteredCoaches(coaches);
-            }}
-            className="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400 transition"
-          >
-            Clear
-          </button>
+        <div className="mb-8">
+          <div className="flex gap-4 mb-4">
+            <input
+              type="text"
+              placeholder="Enter zip code..."
+              value={zipCode}
+              onChange={(e) => setZipCode(e.target.value)}
+              className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+            />
+            <div className="flex items-center gap-2">
+              <label htmlFor="radius" className="text-gray-700 whitespace-nowrap">
+                Radius:
+              </label>
+              <select
+                id="radius"
+                value={radius}
+                onChange={(e) => setRadius(e.target.value)}
+                className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+              >
+                <option value="5">5 miles</option>
+                <option value="10">10 miles</option>
+                <option value="25">25 miles</option>
+                <option value="50">50 miles</option>
+                <option value="100">100 miles</option>
+              </select>
+            </div>
+            <button
+              onClick={handleSearch}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+            >
+              Search
+            </button>
+            <button
+              onClick={() => {
+                setZipCode('');
+                setRadius('10');
+                setFilteredCoaches(coaches);
+              }}
+              className="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400 transition"
+            >
+              Clear
+            </button>
+          </div>
         </div>
 
         {error && (

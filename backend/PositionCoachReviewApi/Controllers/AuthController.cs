@@ -14,11 +14,13 @@ public class AuthController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
     private readonly IJwtService _jwtService;
+    private readonly IZipCodeService _zipCodeService;
 
-    public AuthController(ApplicationDbContext context, IJwtService jwtService)
+    public AuthController(ApplicationDbContext context, IJwtService jwtService, IZipCodeService zipCodeService)
     {
         _context = context;
         _jwtService = jwtService;
+        _zipCodeService = zipCodeService;
     }
 
     [HttpPost("register/user")]
@@ -61,6 +63,9 @@ public class AuthController : ControllerBase
             return BadRequest(new { message = "Email already registered" });
         }
 
+        // Get coordinates for the zipcode
+        var (latitude, longitude) = await _zipCodeService.GetCoordinatesAsync(request.ZipCode);
+
         var coach = new Coach
         {
             Email = request.Email,
@@ -72,7 +77,9 @@ public class AuthController : ControllerBase
             ZipCode = request.ZipCode,
             PhoneNumber = request.PhoneNumber,
             YearsOfExperience = request.YearsOfExperience,
-            SubscriptionTierId = 1 // Default to Free tier
+            SubscriptionTierId = 1, // Default to Free tier
+            Latitude = latitude,
+            Longitude = longitude
         };
 
         _context.Coaches.Add(coach);
