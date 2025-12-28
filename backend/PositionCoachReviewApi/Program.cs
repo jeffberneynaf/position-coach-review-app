@@ -46,6 +46,7 @@ builder.Services.AddAuthorization();
 
 // Register services
 builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IZipCodeService, ZipCodeService>();
 
 // Configure CORS
 builder.Services.AddCors(options =>
@@ -82,6 +83,9 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     db.Database.EnsureCreated();
+    
+    // Seed zipcode data
+    await ZipCodeSeeder.SeedZipCodesAsync(db);
 }
 
 app.Run();

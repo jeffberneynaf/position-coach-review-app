@@ -15,6 +15,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Review> Reviews { get; set; }
     public DbSet<SubscriptionTier> SubscriptionTiers { get; set; }
     public DbSet<Client> Clients { get; set; }
+    public DbSet<ZipCode> ZipCodes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
