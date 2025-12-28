@@ -47,6 +47,7 @@ builder.Services.AddAuthorization();
 // Register services
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IZipCodeService, ZipCodeService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Configure CORS
 builder.Services.AddCors(options =>

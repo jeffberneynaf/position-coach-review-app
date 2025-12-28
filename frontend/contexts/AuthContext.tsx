@@ -38,19 +38,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const registerUser = async (request: RegisterUserRequest) => {
-    const response = await api.post<AuthResponse>('/api/auth/register/user', request);
-    const { token, ...userData } = response.data;
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(userData));
-    setUser(userData);
+    await api.post('/api/auth/register/user', request);
+    // Email verification required - user will need to verify email before logging in
   };
 
   const registerCoach = async (request: RegisterCoachRequest) => {
-    const response = await api.post<AuthResponse>('/api/auth/register/coach', request);
-    const { token, ...userData } = response.data;
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(userData));
-    setUser(userData);
+    await api.post('/api/auth/register/coach', request);
+    // Email verification required - coach will need to verify email before logging in
   };
 
   const logout = () => {

@@ -23,6 +23,13 @@ public class User
     
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     
+    // Email verification fields
+    public bool IsEmailVerified { get; set; } = false;
+    
+    public string? EmailVerificationToken { get; set; }
+    
+    public DateTime? EmailVerificationTokenExpiry { get; set; }
+    
     // Navigation property for submitted reviews
     public ICollection<Review> Reviews { get; set; } = new List<Review>();
 }

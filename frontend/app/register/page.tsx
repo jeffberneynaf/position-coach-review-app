@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import Navbar from '@/components/Navbar';
@@ -21,9 +20,9 @@ export default function RegisterPage() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   
   const { registerUser, registerCoach } = useAuth();
-  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -46,7 +45,6 @@ export default function RegisterPage() {
           firstName: formData.firstName,
           lastName: formData.lastName,
         });
-        router.push('/coaches');
       } else {
         await registerCoach({
           email: formData.email,
@@ -59,14 +57,52 @@ export default function RegisterPage() {
           phoneNumber: formData.phoneNumber,
           yearsOfExperience: formData.yearsOfExperience,
         });
-        router.push('/dashboard');
       }
+      setSuccess(true);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to register');
     } finally {
       setLoading(false);
     }
   };
+
+  if (success) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        
+        <div className="container mx-auto px-4 py-16">
+          <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-8 text-center">
+            <div className="mb-6">
+              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100">
+                <svg className="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            </div>
+            
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">Check Your Email!</h1>
+            
+            <p className="text-gray-600 mb-6">
+              We've sent a verification link to <strong>{formData.email}</strong>. 
+              Please check your inbox and click the link to verify your account.
+            </p>
+            
+            <p className="text-sm text-gray-500 mb-6">
+              The verification link will expire in 24 hours.
+            </p>
+            
+            <Link 
+              href="/login" 
+              className="inline-block bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition"
+            >
+              Go to Login
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

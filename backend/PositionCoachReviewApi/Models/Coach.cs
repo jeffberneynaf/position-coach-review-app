@@ -42,6 +42,13 @@ public class Coach
     
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     
+    // Email verification fields
+    public bool IsEmailVerified { get; set; } = false;
+    
+    public string? EmailVerificationToken { get; set; }
+    
+    public DateTime? EmailVerificationTokenExpiry { get; set; }
+    
     // Navigation properties
     public ICollection<Review> Reviews { get; set; } = new List<Review>();
     public ICollection<Client> Clients { get; set; } = new List<Client>();

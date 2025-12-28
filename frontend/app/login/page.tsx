@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import Navbar from '@/components/Navbar';
+import api from '@/lib/api';
 
 export default function LoginPage() {
   const [userType, setUserType] = useState<'user' | 'coach'>('user');
@@ -12,6 +13,9 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showResendVerification, setShowResendVerification] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendMessage, setResendMessage] = useState('');
   
   const { login } = useAuth();
   const router = useRouter();
@@ -19,6 +23,8 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setShowResendVerification(false);
+    setResendMessage('');
     setLoading(true);
 
     try {
@@ -29,9 +35,36 @@ export default function LoginPage() {
         router.push('/coaches');
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to login');
+      const errorData = err.response?.data;
+      if (errorData?.emailNotVerified) {
+        setError(errorData.message || 'Please verify your email before logging in');
+        setShowResendVerification(true);
+      } else {
+        setError(errorData?.message || 'Failed to login');
+      }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    setResendLoading(true);
+    setResendMessage('');
+    setError('');
+
+    try {
+      // Match backend expectations: "User" or "Coach"
+      const userTypeCapitalized = userType === 'user' ? 'User' : 'Coach';
+      await api.post('/api/auth/resend-verification', {
+        email,
+        userType: userTypeCapitalized,
+      });
+      setResendMessage('Verification email sent! Please check your inbox.');
+      setShowResendVerification(false);
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to resend verification email');
+    } finally {
+      setResendLoading(false);
     }
   };
 
@@ -71,6 +104,25 @@ export default function LoginPage() {
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
               {error}
+            </div>
+          )}
+
+          {showResendVerification && (
+            <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded mb-4">
+              <p className="mb-2">Your email has not been verified yet.</p>
+              <button
+                onClick={handleResendVerification}
+                disabled={resendLoading}
+                className="text-sm underline hover:no-underline disabled:opacity-50"
+              >
+                {resendLoading ? 'Sending...' : 'Resend Verification Email'}
+              </button>
+            </div>
+          )}
+
+          {resendMessage && (
+            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+              {resendMessage}
             </div>
           )}
 
