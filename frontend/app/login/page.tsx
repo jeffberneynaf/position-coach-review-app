@@ -5,7 +5,11 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import Navbar from '@/components/Navbar';
+import Button from '@/components/Button';
+import Input from '@/components/Input';
+import Card from '@/components/Card';
 import api from '@/lib/api';
+import { Mail, Lock, AlertCircle, CheckCircle } from 'lucide-react';
 
 export default function LoginPage() {
   const [userType, setUserType] = useState<'user' | 'coach'>('user');
@@ -34,7 +38,8 @@ export default function LoginPage() {
       } else {
         router.push('/coaches');
       }
-    } catch (err: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { emailNotVerified?: boolean; message?: string } } };
       const errorData = err.response?.data;
       if (errorData?.emailNotVerified) {
         setError(errorData.message || 'Please verify your email before logging in');
@@ -53,7 +58,6 @@ export default function LoginPage() {
     setError('');
 
     try {
-      // Match backend expectations: "User" or "Coach"
       const userTypeCapitalized = userType === 'user' ? 'User' : 'Coach';
       await api.post('/api/auth/resend-verification', {
         email,
@@ -61,7 +65,8 @@ export default function LoginPage() {
       });
       setResendMessage('Verification email sent! Please check your inbox.');
       setShowResendVerification(false);
-    } catch (err: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
       setError(err.response?.data?.message || 'Failed to resend verification email');
     } finally {
       setResendLoading(false);
@@ -72,104 +77,117 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-8">
-          <h1 className="text-3xl font-bold text-center mb-6">Login</h1>
-          
-          <div className="flex gap-2 mb-6">
-            <button
-              type="button"
-              onClick={() => setUserType('user')}
-              className={`flex-1 py-2 px-4 rounded ${
-                userType === 'user'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-700'
-              }`}
-            >
-              User
-            </button>
-            <button
-              type="button"
-              onClick={() => setUserType('coach')}
-              className={`flex-1 py-2 px-4 rounded ${
-                userType === 'coach'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-700'
-              }`}
-            >
-              Coach
-            </button>
-          </div>
-
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-              {error}
+      <div className="container mx-auto px-4 py-32">
+        <div className="max-w-md mx-auto">
+          <Card padding="lg">
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
+              <p className="text-gray-600">Sign in to your account</p>
             </div>
-          )}
-
-          {showResendVerification && (
-            <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded mb-4">
-              <p className="mb-2">Your email has not been verified yet.</p>
+            
+            {/* User Type Toggle - Modern Tabs */}
+            <div className="flex gap-2 mb-6 p-1 bg-gray-100 rounded-lg">
               <button
-                onClick={handleResendVerification}
-                disabled={resendLoading}
-                className="text-sm underline hover:no-underline disabled:opacity-50"
+                type="button"
+                onClick={() => setUserType('user')}
+                className={`flex-1 py-2.5 px-4 rounded-md font-semibold transition-all ${
+                  userType === 'user'
+                    ? 'bg-white text-[#f91942] shadow-md'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
               >
-                {resendLoading ? 'Sending...' : 'Resend Verification Email'}
+                Athlete
+              </button>
+              <button
+                type="button"
+                onClick={() => setUserType('coach')}
+                className={`flex-1 py-2.5 px-4 rounded-md font-semibold transition-all ${
+                  userType === 'coach'
+                    ? 'bg-white text-[#f91942] shadow-md'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                Coach
               </button>
             </div>
-          )}
 
-          {resendMessage && (
-            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-              {resendMessage}
-            </div>
-          )}
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 flex items-start gap-3">
+                <AlertCircle size={20} className="flex-shrink-0 mt-0.5" />
+                <span className="text-sm">{error}</span>
+              </div>
+            )}
 
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-2" htmlFor="email">
-                Email
-              </label>
-              <input
-                id="email"
+            {showResendVerification && (
+              <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg mb-4">
+                <p className="text-sm mb-2">Your email has not been verified yet.</p>
+                <button
+                  onClick={handleResendVerification}
+                  disabled={resendLoading}
+                  className="text-sm font-semibold underline hover:no-underline disabled:opacity-50"
+                >
+                  {resendLoading ? 'Sending...' : 'Resend Verification Email'}
+                </button>
+              </div>
+            )}
+
+            {resendMessage && (
+              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4 flex items-start gap-3">
+                <CheckCircle size={20} className="flex-shrink-0 mt-0.5" />
+                <span className="text-sm">{resendMessage}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <Input
+                label="Email Address"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                icon={<Mail size={18} />}
+                placeholder="your@email.com"
                 required
               />
-            </div>
 
-            <div className="mb-6">
-              <label className="block text-gray-700 mb-2" htmlFor="password">
-                Password
-              </label>
-              <input
-                id="password"
+              <Input
+                label="Password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                icon={<Lock size={18} />}
+                placeholder="Enter your password"
                 required
               />
+
+              <Button
+                type="submit"
+                className="w-full"
+                size="lg"
+                isLoading={loading}
+              >
+                Sign In
+              </Button>
+            </form>
+
+            <div className="mt-6 text-center">
+              <p className="text-gray-600">
+                Don&apos;t have an account?{' '}
+                <Link href="/register" className="text-[#f91942] font-semibold hover:text-[#d01437]">
+                  Sign up
+                </Link>
+              </p>
             </div>
+          </Card>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
-            >
-              {loading ? 'Logging in...' : 'Login'}
-            </button>
-          </form>
-
-          <p className="text-center mt-4 text-gray-600">
-            Don't have an account?{' '}
-            <Link href="/register" className="text-blue-600 hover:underline">
-              Sign up
-            </Link>
-          </p>
+          {/* Additional Info */}
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-500">
+              By signing in, you agree to our{' '}
+              <a href="#" className="text-[#274abb] hover:underline">Terms of Service</a>
+              {' '}and{' '}
+              <a href="#" className="text-[#274abb] hover:underline">Privacy Policy</a>
+            </p>
+          </div>
         </div>
       </div>
     </div>

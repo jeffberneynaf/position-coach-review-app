@@ -4,7 +4,10 @@ import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
+import Button from '@/components/Button';
+import Card from '@/components/Card';
 import api from '@/lib/api';
+import { CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
@@ -30,7 +33,8 @@ function VerifyEmailContent() {
         });
         setStatus('success');
         setMessage(response.data.message || 'Email verified successfully!');
-      } catch (err: any) {
+      } catch (error: unknown) {
+        const err = error as { response?: { data?: { message?: string } } };
         setStatus('error');
         setMessage(err.response?.data?.message || 'Verification failed');
       }
@@ -44,16 +48,18 @@ function VerifyEmailContent() {
       <div className="min-h-screen bg-gray-50">
         <Navbar />
         
-        <div className="container mx-auto px-4 py-16">
-          <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-8 text-center">
-            <div className="mb-6">
-              <div className="mx-auto flex items-center justify-center h-16 w-16">
-                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
+        <div className="container mx-auto px-4 py-32">
+          <div className="max-w-md mx-auto">
+            <Card padding="lg" className="text-center">
+              <div className="mb-6">
+                <div className="w-20 h-20 mx-auto bg-gradient-to-br from-[#274abb] to-[#1e3a8f] rounded-full flex items-center justify-center">
+                  <Loader2 size={48} className="text-white animate-spin" />
+                </div>
               </div>
-            </div>
-            
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Verifying your email...</h1>
-            <p className="text-gray-600">Please wait while we verify your email address.</p>
+              
+              <h1 className="text-2xl font-bold text-gray-900 mb-4">Verifying your email...</h1>
+              <p className="text-gray-600">Please wait while we verify your email address.</p>
+            </Card>
           </div>
         </div>
       </div>
@@ -65,26 +71,27 @@ function VerifyEmailContent() {
       <div className="min-h-screen bg-gray-50">
         <Navbar />
         
-        <div className="container mx-auto px-4 py-16">
-          <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-8 text-center">
-            <div className="mb-6">
-              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100">
-                <svg className="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                </svg>
+        <div className="container mx-auto px-4 py-32">
+          <div className="max-w-md mx-auto">
+            <Card padding="lg" className="text-center">
+              <div className="mb-6">
+                <div className="w-20 h-20 mx-auto bg-gradient-to-br from-[#28a745] to-[#218838] rounded-full flex items-center justify-center">
+                  <CheckCircle2 size={48} className="text-white" />
+                </div>
               </div>
-            </div>
-            
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">Email Verified!</h1>
-            
-            <p className="text-gray-600 mb-6">{message}</p>
-            
-            <button
-              onClick={() => router.push('/login')}
-              className="inline-block bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition"
-            >
-              Go to Login
-            </button>
+              
+              <h1 className="text-3xl font-bold text-gray-900 mb-4">Email Verified!</h1>
+              
+              <p className="text-gray-600 mb-6">{message}</p>
+              
+              <Button
+                onClick={() => router.push('/login')}
+                className="w-full"
+                size="lg"
+              >
+                Go to Login
+              </Button>
+            </Card>
           </div>
         </div>
       </div>
@@ -95,34 +102,32 @@ function VerifyEmailContent() {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-8 text-center">
-          <div className="mb-6">
-            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100">
-              <svg className="h-10 w-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+      <div className="container mx-auto px-4 py-32">
+        <div className="max-w-md mx-auto">
+          <Card padding="lg" className="text-center">
+            <div className="mb-6">
+              <div className="w-20 h-20 mx-auto bg-gradient-to-br from-red-500 to-red-700 rounded-full flex items-center justify-center">
+                <XCircle size={48} className="text-white" />
+              </div>
             </div>
-          </div>
-          
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Verification Failed</h1>
-          
-          <p className="text-gray-600 mb-6">{message}</p>
-          
-          <div className="space-y-3">
-            <Link
-              href="/login"
-              className="block w-full bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition"
-            >
-              Go to Login
-            </Link>
-            <Link
-              href="/register"
-              className="block w-full bg-gray-200 text-gray-700 py-2 px-6 rounded-lg hover:bg-gray-300 transition"
-            >
-              Register Again
-            </Link>
-          </div>
+            
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">Verification Failed</h1>
+            
+            <p className="text-gray-600 mb-6">{message}</p>
+            
+            <div className="space-y-3">
+              <Link href="/login">
+                <Button className="w-full" size="lg">
+                  Go to Login
+                </Button>
+              </Link>
+              <Link href="/register">
+                <Button variant="outline" className="w-full" size="lg">
+                  Register Again
+                </Button>
+              </Link>
+            </div>
+          </Card>
         </div>
       </div>
     </div>
@@ -134,9 +139,13 @@ export default function VerifyEmailPage() {
     <Suspense fallback={
       <div className="min-h-screen bg-gray-50">
         <Navbar />
-        <div className="container mx-auto px-4 py-16">
-          <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-8 text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
+        <div className="container mx-auto px-4 py-32">
+          <div className="max-w-md mx-auto">
+            <Card padding="lg" className="text-center">
+              <div className="w-16 h-16 mx-auto">
+                <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-[#f91942]"></div>
+              </div>
+            </Card>
           </div>
         </div>
       </div>

@@ -1,10 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import api from '@/lib/api';
 import { CoachProfile } from '@/types';
 import Navbar from '@/components/Navbar';
+import Button from '@/components/Button';
+import CoachCard from '@/components/CoachCard';
+import { Search, MapPin, SlidersHorizontal, X } from 'lucide-react';
 
 export default function CoachesPage() {
   const [coaches, setCoaches] = useState<CoachProfile[]>([]);
@@ -23,7 +25,7 @@ export default function CoachesPage() {
       const response = await api.get<CoachProfile[]>('/api/coaches');
       setCoaches(response.data);
       setFilteredCoaches(response.data);
-    } catch (err) {
+    } catch {
       setError('Failed to load coaches');
     } finally {
       setLoading(false);
@@ -39,120 +41,131 @@ export default function CoachesPage() {
     try {
       const response = await api.get<CoachProfile[]>(`/api/coaches/search?zipCode=${zipCode}&radius=${radius}`);
       setFilteredCoaches(response.data);
-    } catch (err) {
+    } catch {
       setError('Failed to search coaches');
     }
   };
 
-  const renderStars = (rating: number) => {
-    return '⭐'.repeat(Math.round(rating));
+  const handleClear = () => {
+    setZipCode('');
+    setRadius('10');
+    setFilteredCoaches(coaches);
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-8">Find a Coach</h1>
-
-        <div className="mb-8">
-          <div className="flex gap-4 mb-4">
-            <input
-              type="text"
-              placeholder="Enter zip code..."
-              value={zipCode}
-              onChange={(e) => setZipCode(e.target.value)}
-              className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-            />
-            <div className="flex items-center gap-2">
-              <label htmlFor="radius" className="text-gray-700 whitespace-nowrap">
-                Radius:
-              </label>
-              <select
-                id="radius"
-                value={radius}
-                onChange={(e) => setRadius(e.target.value)}
-                className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-              >
-                <option value="5">5 miles</option>
-                <option value="10">10 miles</option>
-                <option value="25">25 miles</option>
-                <option value="50">50 miles</option>
-                <option value="100">100 miles</option>
-              </select>
+      {/* Hero Search Section */}
+      <section className="gradient-secondary text-white pt-32 pb-12 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-center">Find Your Coach</h1>
+          <p className="text-xl text-center text-white/90 mb-8">
+            Discover expert position coaches in your area
+          </p>
+          
+          {/* Search Bar */}
+          <div className="bg-white rounded-xl shadow-2xl p-6 max-w-4xl mx-auto">
+            <div className="grid md:grid-cols-12 gap-4">
+              <div className="md:col-span-6">
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                  <input
+                    type="text"
+                    placeholder="Enter zip code..."
+                    value={zipCode}
+                    onChange={(e) => setZipCode(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#f91942]"
+                  />
+                </div>
+              </div>
+              
+              <div className="md:col-span-3">
+                <div className="relative">
+                  <SlidersHorizontal className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                  <select
+                    value={radius}
+                    onChange={(e) => setRadius(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#f91942] appearance-none"
+                  >
+                    <option value="5">5 miles</option>
+                    <option value="10">10 miles</option>
+                    <option value="25">25 miles</option>
+                    <option value="50">50 miles</option>
+                    <option value="100">100 miles</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div className="md:col-span-3 flex gap-2">
+                <Button
+                  onClick={handleSearch}
+                  className="flex-1"
+                  icon={<Search size={20} />}
+                >
+                  Search
+                </Button>
+                {zipCode && (
+                  <Button
+                    onClick={handleClear}
+                    variant="ghost"
+                    className="px-3"
+                    icon={<X size={20} />}
+                  >
+                  </Button>
+                )}
+              </div>
             </div>
-            <button
-              onClick={handleSearch}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
-            >
-              Search
-            </button>
-            <button
-              onClick={() => {
-                setZipCode('');
-                setRadius('10');
-                setFilteredCoaches(coaches);
-              }}
-              className="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400 transition"
-            >
-              Clear
-            </button>
           </div>
         </div>
+      </section>
 
+      <div className="container mx-auto px-4 py-12">
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg mb-6 flex items-center gap-3">
+            <div className="w-5 h-5 rounded-full bg-red-200 flex items-center justify-center text-red-700 font-bold text-sm">!</div>
             {error}
           </div>
         )}
 
+        {/* Results Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">
+              {filteredCoaches.length} {filteredCoaches.length === 1 ? 'Coach' : 'Coaches'} Found
+            </h2>
+            <p className="text-gray-600 mt-1">
+              {zipCode ? `Within ${radius} miles of ${zipCode}` : 'All available coaches'}
+            </p>
+          </div>
+        </div>
+
         {loading ? (
-          <div className="text-center py-8">Loading coaches...</div>
+          <div className="text-center py-16">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-[#f91942]"></div>
+            <p className="mt-4 text-gray-600">Loading coaches...</p>
+          </div>
         ) : filteredCoaches.length === 0 ? (
-          <div className="text-center py-8 text-gray-600">
-            No coaches found. Try a different zip code.
+          <div className="text-center py-16 bg-white rounded-xl shadow-md">
+            <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
+              <Search size={40} className="text-gray-400" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">No coaches found</h3>
+            <p className="text-gray-600 mb-6">
+              {zipCode 
+                ? 'Try expanding your search radius or changing the location.' 
+                : 'No coaches are currently available.'}
+            </p>
+            {zipCode && (
+              <Button onClick={handleClear} variant="outline">
+                Clear Search
+              </Button>
+            )}
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCoaches.map((coach) => (
-              <Link
-                key={coach.id}
-                href={`/coaches/${coach.id}`}
-                className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="text-xl font-bold">
-                      {coach.firstName} {coach.lastName}
-                    </h3>
-                    <p className="text-gray-600">{coach.specialization || 'Position Coach'}</p>
-                  </div>
-                  <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-                    {coach.subscriptionTierName}
-                  </span>
-                </div>
-
-                <div className="mb-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-2xl">{renderStars(coach.averageRating)}</span>
-                    <span className="text-gray-600">
-                      {coach.averageRating.toFixed(1)} ({coach.reviewCount} reviews)
-                    </span>
-                  </div>
-                  <p className="text-gray-600 text-sm">
-                    📍 Zip: {coach.zipCode}
-                  </p>
-                  <p className="text-gray-600 text-sm">
-                    🎓 {coach.yearsOfExperience} years experience
-                  </p>
-                </div>
-
-                {coach.bio && (
-                  <p className="text-gray-700 text-sm line-clamp-3">
-                    {coach.bio}
-                  </p>
-                )}
-              </Link>
+              <CoachCard key={coach.id} coach={coach} />
             ))}
           </div>
         )}

@@ -5,7 +5,12 @@ import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 import Navbar from '@/components/Navbar';
+import Button from '@/components/Button';
+import Card from '@/components/Card';
+import Input from '@/components/Input';
+import ReviewCard from '@/components/ReviewCard';
 import { Client, Review, DashboardStats, SubscriptionTier } from '@/types';
+import { Users, MessageCircle, Star, TrendingUp, Plus, Mail, Phone, User as UserIcon, Check, X } from 'lucide-react';
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -43,7 +48,7 @@ export default function DashboardPage() {
       setClients(clientsRes.data);
       setReviews(reviewsRes.data);
       setSubscriptions(subsRes.data);
-    } catch (err) {
+    } catch {
       setError('Failed to load dashboard data');
     } finally {
       setLoading(false);
@@ -57,7 +62,8 @@ export default function DashboardPage() {
       setNewClient({ name: '', email: '', phoneNumber: '' });
       setShowAddClient(false);
       fetchDashboardData();
-    } catch (err: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
       setError(err.response?.data?.message || 'Failed to add client');
     }
   };
@@ -67,7 +73,7 @@ export default function DashboardPage() {
       await api.put('/api/subscriptions/upgrade', { subscriptionTierId: tierId });
       alert('Subscription updated successfully!');
       fetchDashboardData();
-    } catch (err) {
+    } catch {
       setError('Failed to upgrade subscription');
     }
   };
@@ -76,7 +82,10 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navbar />
-        <div className="container mx-auto px-4 py-8 text-center">Loading...</div>
+        <div className="container mx-auto px-4 py-32 text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-[#f91942]"></div>
+          <p className="mt-4 text-gray-600">Loading dashboard...</p>
+        </div>
       </div>
     );
   }
@@ -85,146 +94,183 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-8">Coach Dashboard</h1>
+      {/* Header */}
+      <div className="gradient-secondary text-white pt-32 pb-12 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <h1 className="text-4xl font-bold mb-2">Coach Dashboard</h1>
+          <p className="text-white/90">Welcome back, {user?.firstName}!</p>
+        </div>
+      </div>
 
+      <div className="container mx-auto max-w-6xl px-4 py-8">
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
             {error}
           </div>
         )}
 
-        <div className="flex gap-2 mb-8 border-b">
+        {/* Modern Tab Navigation */}
+        <div className="flex gap-2 mb-8 overflow-x-auto">
           <button
             onClick={() => setActiveTab('overview')}
-            className={`px-6 py-3 font-semibold ${
+            className={`px-6 py-3 font-semibold rounded-lg transition whitespace-nowrap ${
               activeTab === 'overview'
-                ? 'border-b-2 border-blue-600 text-blue-600'
-                : 'text-gray-600'
+                ? 'bg-white text-[#f91942] shadow-md'
+                : 'text-gray-600 hover:bg-white/50'
             }`}
           >
             Overview
           </button>
           <button
             onClick={() => setActiveTab('clients')}
-            className={`px-6 py-3 font-semibold ${
+            className={`px-6 py-3 font-semibold rounded-lg transition whitespace-nowrap ${
               activeTab === 'clients'
-                ? 'border-b-2 border-blue-600 text-blue-600'
-                : 'text-gray-600'
+                ? 'bg-white text-[#f91942] shadow-md'
+                : 'text-gray-600 hover:bg-white/50'
             }`}
           >
             Clients ({clients.length})
           </button>
           <button
             onClick={() => setActiveTab('reviews')}
-            className={`px-6 py-3 font-semibold ${
+            className={`px-6 py-3 font-semibold rounded-lg transition whitespace-nowrap ${
               activeTab === 'reviews'
-                ? 'border-b-2 border-blue-600 text-blue-600'
-                : 'text-gray-600'
+                ? 'bg-white text-[#f91942] shadow-md'
+                : 'text-gray-600 hover:bg-white/50'
             }`}
           >
             Reviews ({reviews.length})
           </button>
           <button
             onClick={() => setActiveTab('subscription')}
-            className={`px-6 py-3 font-semibold ${
+            className={`px-6 py-3 font-semibold rounded-lg transition whitespace-nowrap ${
               activeTab === 'subscription'
-                ? 'border-b-2 border-blue-600 text-blue-600'
-                : 'text-gray-600'
+                ? 'bg-white text-[#f91942] shadow-md'
+                : 'text-gray-600 hover:bg-white/50'
             }`}
           >
             Subscription
           </button>
         </div>
 
+        {/* Overview Tab */}
         {activeTab === 'overview' && stats && (
           <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h3 className="text-xl font-bold mb-2">Total Clients</h3>
-              <p className="text-4xl font-bold text-blue-600">{stats.clientCount}</p>
-            </div>
+            <Card hover className="relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#274abb]/10 to-transparent rounded-full -mr-16 -mt-16"></div>
+              <div className="relative">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-[#274abb] to-[#1e3a8f] rounded-lg flex items-center justify-center">
+                    <Users className="text-white" size={24} />
+                  </div>
+                  <TrendingUp className="text-[#28a745]" size={20} />
+                </div>
+                <h3 className="text-sm font-medium text-gray-600 mb-1">Total Clients</h3>
+                <p className="text-4xl font-bold text-gray-900">{stats.clientCount}</p>
+              </div>
+            </Card>
             
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h3 className="text-xl font-bold mb-2">Total Reviews</h3>
-              <p className="text-4xl font-bold text-blue-600">{stats.reviewCount}</p>
-            </div>
+            <Card hover className="relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#f91942]/10 to-transparent rounded-full -mr-16 -mt-16"></div>
+              <div className="relative">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-[#f91942] to-[#d01437] rounded-lg flex items-center justify-center">
+                    <MessageCircle className="text-white" size={24} />
+                  </div>
+                  <TrendingUp className="text-[#28a745]" size={20} />
+                </div>
+                <h3 className="text-sm font-medium text-gray-600 mb-1">Total Reviews</h3>
+                <p className="text-4xl font-bold text-gray-900">{stats.reviewCount}</p>
+              </div>
+            </Card>
             
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h3 className="text-xl font-bold mb-2">Average Rating</h3>
-              <p className="text-4xl font-bold text-blue-600">
-                {stats.averageRating.toFixed(1)} ⭐
-              </p>
-            </div>
+            <Card hover className="relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#ffc107]/10 to-transparent rounded-full -mr-16 -mt-16"></div>
+              <div className="relative">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-[#ffc107] to-[#ff9800] rounded-lg flex items-center justify-center">
+                    <Star className="text-white" size={24} />
+                  </div>
+                  <span className="text-2xl">⭐</span>
+                </div>
+                <h3 className="text-sm font-medium text-gray-600 mb-1">Average Rating</h3>
+                <p className="text-4xl font-bold text-gray-900">
+                  {stats.averageRating.toFixed(1)}
+                </p>
+              </div>
+            </Card>
           </div>
         )}
 
+        {/* Clients Tab */}
         {activeTab === 'clients' && (
-          <div className="bg-white rounded-lg shadow-md p-8">
+          <Card>
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold">My Clients</h2>
-              <button
+              <h2 className="text-2xl font-bold text-gray-900">My Clients</h2>
+              <Button
                 onClick={() => setShowAddClient(!showAddClient)}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+                icon={showAddClient ? <X size={18} /> : <Plus size={18} />}
               >
                 {showAddClient ? 'Cancel' : 'Add Client'}
-              </button>
+              </Button>
             </div>
 
             {showAddClient && (
-              <form onSubmit={handleAddClient} className="mb-6 p-6 bg-gray-50 rounded-lg">
-                <div className="grid md:grid-cols-3 gap-4">
-                  <input
-                    type="text"
-                    placeholder="Name"
+              <Card className="mb-6 bg-gray-50" padding="md">
+                <form onSubmit={handleAddClient} className="space-y-4">
+                  <Input
+                    label="Name"
                     value={newClient.name}
                     onChange={(e) => setNewClient({ ...newClient, name: e.target.value })}
-                    className="px-4 py-2 border rounded-lg"
+                    icon={<UserIcon size={18} />}
                     required
                   />
-                  <input
+                  <Input
+                    label="Email"
                     type="email"
-                    placeholder="Email"
                     value={newClient.email}
                     onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
-                    className="px-4 py-2 border rounded-lg"
+                    icon={<Mail size={18} />}
                   />
-                  <input
+                  <Input
+                    label="Phone"
                     type="tel"
-                    placeholder="Phone"
                     value={newClient.phoneNumber}
                     onChange={(e) => setNewClient({ ...newClient, phoneNumber: e.target.value })}
-                    className="px-4 py-2 border rounded-lg"
+                    icon={<Phone size={18} />}
                   />
-                </div>
-                <button
-                  type="submit"
-                  className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
-                >
-                  Add Client
-                </button>
-              </form>
+                  <Button type="submit" icon={<Plus size={18} />}>
+                    Add Client
+                  </Button>
+                </form>
+              </Card>
             )}
 
             {clients.length === 0 ? (
-              <p className="text-gray-600">No clients yet.</p>
+              <div className="text-center py-12">
+                <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                  <Users size={32} className="text-gray-400" />
+                </div>
+                <p className="text-gray-600">No clients yet.</p>
+              </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-3 px-4">Name</th>
-                      <th className="text-left py-3 px-4">Email</th>
-                      <th className="text-left py-3 px-4">Phone</th>
-                      <th className="text-left py-3 px-4">Added</th>
+                    <tr className="border-b-2 border-gray-200">
+                      <th className="text-left py-3 px-4 font-semibold text-gray-700">Name</th>
+                      <th className="text-left py-3 px-4 font-semibold text-gray-700">Email</th>
+                      <th className="text-left py-3 px-4 font-semibold text-gray-700">Phone</th>
+                      <th className="text-left py-3 px-4 font-semibold text-gray-700">Added</th>
                     </tr>
                   </thead>
                   <tbody>
                     {clients.map((client) => (
-                      <tr key={client.id} className="border-b hover:bg-gray-50">
-                        <td className="py-3 px-4">{client.name}</td>
-                        <td className="py-3 px-4">{client.email}</td>
-                        <td className="py-3 px-4">{client.phoneNumber}</td>
-                        <td className="py-3 px-4">
+                      <tr key={client.id} className="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td className="py-3 px-4 font-medium text-gray-900">{client.name}</td>
+                        <td className="py-3 px-4 text-gray-600">{client.email}</td>
+                        <td className="py-3 px-4 text-gray-600">{client.phoneNumber}</td>
+                        <td className="py-3 px-4 text-gray-600">
                           {new Date(client.createdAt).toLocaleDateString()}
                         </td>
                       </tr>
@@ -233,81 +279,96 @@ export default function DashboardPage() {
                 </table>
               </div>
             )}
-          </div>
+          </Card>
         )}
 
+        {/* Reviews Tab */}
         {activeTab === 'reviews' && (
-          <div className="bg-white rounded-lg shadow-md p-8">
-            <h2 className="text-2xl font-bold mb-6">My Reviews</h2>
+          <Card>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">My Reviews</h2>
             
             {reviews.length === 0 ? (
-              <p className="text-gray-600">No reviews yet.</p>
+              <div className="text-center py-12">
+                <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                  <MessageCircle size={32} className="text-gray-400" />
+                </div>
+                <p className="text-gray-600">No reviews yet.</p>
+              </div>
             ) : (
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {reviews.map((review) => (
-                  <div key={review.id} className="border-b pb-6 last:border-b-0">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <p className="font-semibold">{review.userName}</p>
-                        <p className="text-sm text-gray-600">
-                          {new Date(review.createdAt).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <span className="text-xl">{'⭐'.repeat(review.rating)}</span>
-                    </div>
-                    <p className="text-gray-700">{review.comment}</p>
-                  </div>
+                  <ReviewCard key={review.id} review={review} />
                 ))}
               </div>
             )}
-          </div>
+          </Card>
         )}
 
+        {/* Subscription Tab */}
         {activeTab === 'subscription' && (
           <div>
-            <h2 className="text-2xl font-bold mb-6">Subscription Tiers</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Subscription Plans</h2>
+            <p className="text-gray-600 mb-8">Choose the plan that fits your coaching needs</p>
+            
             <div className="grid md:grid-cols-3 gap-6">
               {subscriptions.map((tier) => (
-                <div
+                <Card
                   key={tier.id}
-                  className="bg-white rounded-lg shadow-md p-6 border-2 hover:border-blue-600 transition"
+                  hover
+                  className={`relative ${tier.name === 'Premium' ? 'border-2 border-[#f91942]' : ''}`}
                 >
-                  <h3 className="text-2xl font-bold mb-2">{tier.name}</h3>
-                  <p className="text-3xl font-bold text-blue-600 mb-4">
-                    ${tier.price.toFixed(2)}/mo
-                  </p>
-                  <p className="text-gray-600 mb-4">{tier.description}</p>
+                  {tier.name === 'Premium' && (
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                      <span className="bg-gradient-to-r from-[#f91942] to-[#d01437] text-white text-xs font-bold px-4 py-1 rounded-full">
+                        POPULAR
+                      </span>
+                    </div>
+                  )}
                   
-                  <ul className="space-y-2 mb-6">
-                    <li className="flex items-center gap-2">
-                      <span className="text-green-600">✓</span>
-                      Up to {tier.maxClients} clients
+                  <div className="text-center mb-6">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">{tier.name}</h3>
+                    <div className="mb-4">
+                      <span className="text-4xl font-bold text-[#f91942]">${tier.price.toFixed(0)}</span>
+                      <span className="text-gray-600">/month</span>
+                    </div>
+                    <p className="text-sm text-gray-600">{tier.description}</p>
+                  </div>
+                  
+                  <ul className="space-y-3 mb-6">
+                    <li className="flex items-center gap-3 text-gray-700">
+                      <Check size={20} className="text-[#28a745] flex-shrink-0" />
+                      <span>Up to {tier.maxClients} clients</span>
                     </li>
-                    <li className="flex items-center gap-2">
+                    <li className="flex items-center gap-3 text-gray-700">
                       {tier.featuredListing ? (
-                        <span className="text-green-600">✓</span>
+                        <Check size={20} className="text-[#28a745] flex-shrink-0" />
                       ) : (
-                        <span className="text-gray-400">✗</span>
+                        <X size={20} className="text-gray-400 flex-shrink-0" />
                       )}
-                      Featured listing
+                      <span className={!tier.featuredListing ? 'text-gray-400' : ''}>
+                        Featured listing
+                      </span>
                     </li>
-                    <li className="flex items-center gap-2">
+                    <li className="flex items-center gap-3 text-gray-700">
                       {tier.analyticsAccess ? (
-                        <span className="text-green-600">✓</span>
+                        <Check size={20} className="text-[#28a745] flex-shrink-0" />
                       ) : (
-                        <span className="text-gray-400">✗</span>
+                        <X size={20} className="text-gray-400 flex-shrink-0" />
                       )}
-                      Analytics access
+                      <span className={!tier.analyticsAccess ? 'text-gray-400' : ''}>
+                        Analytics access
+                      </span>
                     </li>
                   </ul>
 
-                  <button
+                  <Button
                     onClick={() => handleUpgradeSubscription(tier.id)}
-                    className="w-full bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+                    className="w-full"
+                    variant={tier.name === 'Premium' ? 'primary' : 'outline'}
                   >
                     Select Plan
-                  </button>
-                </div>
+                  </Button>
+                </Card>
               ))}
             </div>
           </div>
