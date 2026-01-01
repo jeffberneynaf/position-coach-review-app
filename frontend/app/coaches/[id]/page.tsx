@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import api from '@/lib/api';
-import { CoachProfile, Review } from '@/types';
+import { CoachProfile } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
 import Navbar from '@/components/Navbar';
 import Button from '@/components/Button';
@@ -24,20 +24,20 @@ export default function CoachProfilePage() {
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    fetchCoach();
-  }, [params.id]);
-
-  const fetchCoach = async () => {
+  const fetchCoach = useCallback(async () => {
     try {
       const response = await api.get<CoachProfile>(`/api/coaches/${params.id}`);
       setCoach(response.data);
-    } catch (err) {
+    } catch {
       setError('Failed to load coach profile');
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.id]);
+
+  useEffect(() => {
+    fetchCoach();
+  }, [fetchCoach]);
 
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,7 +57,8 @@ export default function CoachProfilePage() {
       setRating(5);
       setComment('');
       fetchCoach();
-    } catch (err: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
       setError(err.response?.data?.message || 'Failed to submit review');
     } finally {
       setSubmitting(false);

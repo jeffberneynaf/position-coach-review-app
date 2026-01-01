@@ -48,7 +48,7 @@ export default function DashboardPage() {
       setClients(clientsRes.data);
       setReviews(reviewsRes.data);
       setSubscriptions(subsRes.data);
-    } catch (err) {
+    } catch {
       setError('Failed to load dashboard data');
     } finally {
       setLoading(false);
@@ -62,7 +62,8 @@ export default function DashboardPage() {
       setNewClient({ name: '', email: '', phoneNumber: '' });
       setShowAddClient(false);
       fetchDashboardData();
-    } catch (err: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
       setError(err.response?.data?.message || 'Failed to add client');
     }
   };
@@ -72,7 +73,7 @@ export default function DashboardPage() {
       await api.put('/api/subscriptions/upgrade', { subscriptionTierId: tierId });
       alert('Subscription updated successfully!');
       fetchDashboardData();
-    } catch (err) {
+    } catch {
       setError('Failed to upgrade subscription');
     }
   };

@@ -2,7 +2,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
-import { Search, MapPin, Star, Users, Award, TrendingUp, CheckCircle, Target } from "lucide-react";
+import { Search, MapPin, Star, Users, Award, CheckCircle, Target } from "lucide-react";
 
 export default function Home() {
   return (

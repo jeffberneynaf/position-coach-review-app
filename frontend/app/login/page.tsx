@@ -38,7 +38,8 @@ export default function LoginPage() {
       } else {
         router.push('/coaches');
       }
-    } catch (err: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { emailNotVerified?: boolean; message?: string } } };
       const errorData = err.response?.data;
       if (errorData?.emailNotVerified) {
         setError(errorData.message || 'Please verify your email before logging in');
@@ -64,7 +65,8 @@ export default function LoginPage() {
       });
       setResendMessage('Verification email sent! Please check your inbox.');
       setShowResendVerification(false);
-    } catch (err: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
       setError(err.response?.data?.message || 'Failed to resend verification email');
     } finally {
       setResendLoading(false);
@@ -169,7 +171,7 @@ export default function LoginPage() {
 
             <div className="mt-6 text-center">
               <p className="text-gray-600">
-                Don't have an account?{' '}
+                Don&apos;t have an account?{' '}
                 <Link href="/register" className="text-[#f91942] font-semibold hover:text-[#d01437]">
                   Sign up
                 </Link>

@@ -5,7 +5,6 @@ import api from '@/lib/api';
 import { CoachProfile } from '@/types';
 import Navbar from '@/components/Navbar';
 import Button from '@/components/Button';
-import Input from '@/components/Input';
 import CoachCard from '@/components/CoachCard';
 import { Search, MapPin, SlidersHorizontal, X } from 'lucide-react';
 
@@ -26,7 +25,7 @@ export default function CoachesPage() {
       const response = await api.get<CoachProfile[]>('/api/coaches');
       setCoaches(response.data);
       setFilteredCoaches(response.data);
-    } catch (err) {
+    } catch {
       setError('Failed to load coaches');
     } finally {
       setLoading(false);
@@ -42,7 +41,7 @@ export default function CoachesPage() {
     try {
       const response = await api.get<CoachProfile[]>(`/api/coaches/search?zipCode=${zipCode}&radius=${radius}`);
       setFilteredCoaches(response.data);
-    } catch (err) {
+    } catch {
       setError('Failed to search coaches');
     }
   };

@@ -63,7 +63,8 @@ export default function RegisterPage() {
         });
       }
       setSuccess(true);
-    } catch (err: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
       setError(err.response?.data?.message || 'Failed to register');
     } finally {
       setLoading(false);
@@ -87,7 +88,7 @@ export default function RegisterPage() {
               <h1 className="text-3xl font-bold text-gray-900 mb-4">Check Your Email!</h1>
               
               <p className="text-gray-600 mb-6 leading-relaxed">
-                We've sent a verification link to <strong className="text-gray-900">{formData.email}</strong>. 
+                We&apos;ve sent a verification link to <strong className="text-gray-900">{formData.email}</strong>. 
                 Please check your inbox and click the link to verify your account.
               </p>
               
@@ -132,7 +133,7 @@ export default function RegisterPage() {
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
-                I'm an Athlete
+                I&apos;m an Athlete
               </button>
               <button
                 type="button"
@@ -143,7 +144,7 @@ export default function RegisterPage() {
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
-                I'm a Coach
+                I&apos;m a Coach
               </button>
             </div>
 

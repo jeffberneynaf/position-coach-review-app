@@ -4,10 +4,9 @@ import { Star, Calendar } from 'lucide-react';
 
 interface ReviewCardProps {
   review: Review;
-  showCoachName?: boolean;
 }
 
-export default function ReviewCard({ review, showCoachName = false }: ReviewCardProps) {
+export default function ReviewCard({ review }: ReviewCardProps) {
   const renderStars = (rating: number) => {
     const stars = [];
     for (let i = 0; i < 5; i++) {
