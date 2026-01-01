@@ -6,6 +6,10 @@ import api from '@/lib/api';
 import { CoachProfile, Review } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
 import Navbar from '@/components/Navbar';
+import Button from '@/components/Button';
+import Card from '@/components/Card';
+import ReviewCard from '@/components/ReviewCard';
+import { Star, MapPin, Phone, Mail, Briefcase, Award, MessageCircle } from 'lucide-react';
 
 export default function CoachProfilePage() {
   const params = useParams();
@@ -52,7 +56,7 @@ export default function CoachProfilePage() {
       setShowReviewForm(false);
       setRating(5);
       setComment('');
-      fetchCoach(); // Refresh to show new review
+      fetchCoach();
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to submit review');
     } finally {
@@ -61,14 +65,30 @@ export default function CoachProfilePage() {
   };
 
   const renderStars = (rating: number) => {
-    return '⭐'.repeat(Math.round(rating));
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+    
+    for (let i = 0; i < 5; i++) {
+      if (i < fullStars) {
+        stars.push(<Star key={i} size={20} fill="#ffc107" stroke="#ffc107" />);
+      } else if (i === fullStars && hasHalfStar) {
+        stars.push(<Star key={i} size={20} fill="#ffc107" stroke="#ffc107" className="opacity-50" />);
+      } else {
+        stars.push(<Star key={i} size={20} stroke="#e0e0e0" />);
+      }
+    }
+    return stars;
   };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navbar />
-        <div className="container mx-auto px-4 py-8 text-center">Loading...</div>
+        <div className="container mx-auto px-4 py-32 text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-[#f91942]"></div>
+          <p className="mt-4 text-gray-600">Loading coach profile...</p>
+        </div>
       </div>
     );
   }
@@ -77,7 +97,10 @@ export default function CoachProfilePage() {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navbar />
-        <div className="container mx-auto px-4 py-8 text-center">Coach not found</div>
+        <div className="container mx-auto px-4 py-32 text-center">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">Coach Not Found</h1>
+          <Button onClick={() => router.push('/coaches')}>Back to Coaches</Button>
+        </div>
       </div>
     );
   }
@@ -86,133 +109,231 @@ export default function CoachProfilePage() {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       
-      <div className="container mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-md p-8 mb-8">
-          <div className="flex justify-between items-start mb-6">
-            <div>
-              <h1 className="text-4xl font-bold mb-2">
-                {coach.firstName} {coach.lastName}
-              </h1>
-              <p className="text-xl text-gray-600 mb-4">{coach.specialization || 'Position Coach'}</p>
-            </div>
-            <span className="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg">
-              {coach.subscriptionTierName}
-            </span>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8 mb-6">
-            <div>
-              <h3 className="font-bold mb-2">Rating</h3>
-              <div className="flex items-center gap-2">
-                <span className="text-3xl">{renderStars(coach.averageRating)}</span>
-                <span className="text-xl text-gray-600">
-                  {coach.averageRating.toFixed(1)} ({coach.reviewCount} reviews)
-                </span>
+      {/* Header Section */}
+      <section className="gradient-secondary text-white pt-32 pb-12 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <div className="flex flex-col md:flex-row items-start gap-8">
+            {/* Avatar */}
+            <div className="flex-shrink-0">
+              <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center text-[#274abb] text-4xl font-bold shadow-xl">
+                {coach.firstName.charAt(0)}{coach.lastName.charAt(0)}
               </div>
             </div>
 
-            <div>
-              <h3 className="font-bold mb-2">Contact Info</h3>
-              <p className="text-gray-700">📍 Zip Code: {coach.zipCode}</p>
-              {coach.phoneNumber && (
-                <p className="text-gray-700">📞 {coach.phoneNumber}</p>
-              )}
-              <p className="text-gray-700">✉️ {coach.email}</p>
-            </div>
-          </div>
-
-          <div className="mb-6">
-            <h3 className="font-bold mb-2">Experience</h3>
-            <p className="text-gray-700">{coach.yearsOfExperience} years of coaching experience</p>
-          </div>
-
-          {coach.bio && (
-            <div className="mb-6">
-              <h3 className="font-bold mb-2">About</h3>
-              <p className="text-gray-700">{coach.bio}</p>
-            </div>
-          )}
-
-          {user && user.userType === 'User' && (
-            <button
-              onClick={() => setShowReviewForm(!showReviewForm)}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
-            >
-              {showReviewForm ? 'Cancel' : 'Write a Review'}
-            </button>
-          )}
-
-          {showReviewForm && (
-            <form onSubmit={handleSubmitReview} className="mt-6 p-6 bg-gray-50 rounded-lg">
-              <h3 className="font-bold mb-4">Submit Your Review</h3>
-              
-              {error && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                  {error}
+            {/* Info */}
+            <div className="flex-1">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h1 className="text-4xl font-bold mb-2">
+                    {coach.firstName} {coach.lastName}
+                  </h1>
+                  <p className="text-xl text-white/90 mb-4">{coach.specialization || 'Position Coach'}</p>
                 </div>
-              )}
-
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Rating</label>
-                <select
-                  value={rating}
-                  onChange={(e) => setRating(parseInt(e.target.value))}
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-                >
-                  <option value={5}>⭐⭐⭐⭐⭐ Excellent</option>
-                  <option value={4}>⭐⭐⭐⭐ Good</option>
-                  <option value={3}>⭐⭐⭐ Average</option>
-                  <option value={2}>⭐⭐ Below Average</option>
-                  <option value={1}>⭐ Poor</option>
-                </select>
+                {coach.subscriptionTierName !== 'Free' && (
+                  <span className="bg-gradient-to-r from-[#f91942] to-[#d01437] text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2">
+                    <Award size={16} />
+                    {coach.subscriptionTierName}
+                  </span>
+                )}
               </div>
 
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Comment</label>
-                <textarea
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-                  rows={4}
-                  required
-                  placeholder="Share your experience with this coach..."
-                />
+              {/* Rating */}
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center gap-1">
+                  {renderStars(coach.averageRating)}
+                </div>
+                <span className="text-2xl font-bold">{coach.averageRating.toFixed(1)}</span>
+                <span className="text-white/80">({coach.reviewCount} reviews)</span>
               </div>
 
-              <button
-                type="submit"
-                disabled={submitting}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
-              >
-                {submitting ? 'Submitting...' : 'Submit Review'}
-              </button>
-            </form>
-          )}
+              {/* Quick Info */}
+              <div className="flex flex-wrap gap-6 text-white/90">
+                <div className="flex items-center gap-2">
+                  <MapPin size={18} />
+                  <span>Zip: {coach.zipCode}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Briefcase size={18} />
+                  <span>{coach.yearsOfExperience} years experience</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </section>
 
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <h2 className="text-2xl font-bold mb-6">Reviews ({coach.reviewCount})</h2>
-          
-          {coach.reviews.length === 0 ? (
-            <p className="text-gray-600">No reviews yet. Be the first to review!</p>
-          ) : (
-            <div className="space-y-6">
-              {coach.reviews.map((review) => (
-                <div key={review.id} className="border-b pb-6 last:border-b-0">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <p className="font-semibold">{review.userName}</p>
-                      <p className="text-sm text-gray-600">
-                        {new Date(review.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <span className="text-xl">{renderStars(review.rating)}</span>
-                  </div>
-                  <p className="text-gray-700">{review.comment}</p>
+      {/* Main Content */}
+      <div className="container mx-auto max-w-6xl px-4 py-12">
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Main Column */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* About Section */}
+            <Card>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">About</h2>
+              {coach.bio ? (
+                <p className="text-gray-700 leading-relaxed">{coach.bio}</p>
+              ) : (
+                <p className="text-gray-500 italic">No bio provided</p>
+              )}
+            </Card>
+
+            {/* Review Form */}
+            {user && user.userType === 'User' && (
+              <Card>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-2xl font-bold text-gray-900">Write a Review</h2>
+                  {!showReviewForm && (
+                    <Button
+                      onClick={() => setShowReviewForm(true)}
+                      icon={<MessageCircle size={18} />}
+                    >
+                      Add Review
+                    </Button>
+                  )}
                 </div>
-              ))}
-            </div>
-          )}
+
+                {showReviewForm && (
+                  <form onSubmit={handleSubmitReview} className="space-y-4">
+                    {error && (
+                      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                        {error}
+                      </div>
+                    )}
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Rating
+                      </label>
+                      <select
+                        value={rating}
+                        onChange={(e) => setRating(parseInt(e.target.value))}
+                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f91942]"
+                      >
+                        <option value={5}>⭐⭐⭐⭐⭐ Excellent</option>
+                        <option value={4}>⭐⭐⭐⭐ Good</option>
+                        <option value={3}>⭐⭐⭐ Average</option>
+                        <option value={2}>⭐⭐ Below Average</option>
+                        <option value={1}>⭐ Poor</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Your Review
+                      </label>
+                      <textarea
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                        className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#f91942]"
+                        rows={4}
+                        required
+                        placeholder="Share your experience with this coach..."
+                      />
+                    </div>
+
+                    <div className="flex gap-3">
+                      <Button type="submit" isLoading={submitting}>
+                        Submit Review
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={() => setShowReviewForm(false)}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </form>
+                )}
+              </Card>
+            )}
+
+            {/* Reviews Section */}
+            <Card>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                Reviews ({coach.reviewCount})
+              </h2>
+              
+              {coach.reviews.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                    <MessageCircle size={32} className="text-gray-400" />
+                  </div>
+                  <p className="text-gray-600">No reviews yet. Be the first to review!</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {coach.reviews.map((review) => (
+                    <ReviewCard key={review.id} review={review} />
+                  ))}
+                </div>
+              )}
+            </Card>
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Contact Card */}
+            <Card>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Contact Information</h3>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3 text-gray-700">
+                  <Mail className="text-[#f91942] flex-shrink-0 mt-1" size={18} />
+                  <div>
+                    <p className="text-sm text-gray-500">Email</p>
+                    <a href={`mailto:${coach.email}`} className="hover:text-[#f91942] break-all">
+                      {coach.email}
+                    </a>
+                  </div>
+                </div>
+                {coach.phoneNumber && (
+                  <div className="flex items-start gap-3 text-gray-700">
+                    <Phone className="text-[#f91942] flex-shrink-0 mt-1" size={18} />
+                    <div>
+                      <p className="text-sm text-gray-500">Phone</p>
+                      <a href={`tel:${coach.phoneNumber}`} className="hover:text-[#f91942]">
+                        {coach.phoneNumber}
+                      </a>
+                    </div>
+                  </div>
+                )}
+                <div className="flex items-start gap-3 text-gray-700">
+                  <MapPin className="text-[#f91942] flex-shrink-0 mt-1" size={18} />
+                  <div>
+                    <p className="text-sm text-gray-500">Location</p>
+                    <p>Zip: {coach.zipCode}</p>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Stats Card */}
+            <Card>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Quick Stats</h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between py-3 border-b border-gray-100">
+                  <span className="text-gray-600">Experience</span>
+                  <span className="font-semibold text-gray-900">{coach.yearsOfExperience} years</span>
+                </div>
+                <div className="flex items-center justify-between py-3 border-b border-gray-100">
+                  <span className="text-gray-600">Reviews</span>
+                  <span className="font-semibold text-gray-900">{coach.reviewCount}</span>
+                </div>
+                <div className="flex items-center justify-between py-3">
+                  <span className="text-gray-600">Avg Rating</span>
+                  <span className="font-semibold text-gray-900">{coach.averageRating.toFixed(1)} ⭐</span>
+                </div>
+              </div>
+            </Card>
+
+            {/* Subscription Card */}
+            <Card className="bg-gradient-to-br from-[#274abb] to-[#1e3a8f] text-white">
+              <h3 className="text-xl font-bold mb-2">{coach.subscriptionTierName} Member</h3>
+              <p className="text-white/90 text-sm">
+                This coach is a verified {coach.subscriptionTierName.toLowerCase()} member of our platform.
+              </p>
+            </Card>
+          </div>
         </div>
       </div>
     </div>
