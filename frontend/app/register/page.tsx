@@ -4,6 +4,10 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import Navbar from '@/components/Navbar';
+import Button from '@/components/Button';
+import Input from '@/components/Input';
+import Card from '@/components/Card';
+import { Mail, Lock, User as UserIcon, MapPin, Phone, Briefcase, FileText, CheckCircle2 } from 'lucide-react';
 
 export default function RegisterPage() {
   const [userType, setUserType] = useState<'user' | 'coach'>('user');
@@ -71,33 +75,34 @@ export default function RegisterPage() {
       <div className="min-h-screen bg-gray-50">
         <Navbar />
         
-        <div className="container mx-auto px-4 py-16">
-          <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-8 text-center">
-            <div className="mb-6">
-              <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100">
-                <svg className="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                </svg>
+        <div className="container mx-auto px-4 py-32">
+          <div className="max-w-md mx-auto">
+            <Card padding="lg" className="text-center">
+              <div className="mb-6">
+                <div className="mx-auto w-20 h-20 bg-gradient-to-br from-[#28a745] to-[#218838] rounded-full flex items-center justify-center">
+                  <CheckCircle2 size={48} className="text-white" />
+                </div>
               </div>
-            </div>
-            
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">Check Your Email!</h1>
-            
-            <p className="text-gray-600 mb-6">
-              We've sent a verification link to <strong>{formData.email}</strong>. 
-              Please check your inbox and click the link to verify your account.
-            </p>
-            
-            <p className="text-sm text-gray-500 mb-6">
-              The verification link will expire in 24 hours.
-            </p>
-            
-            <Link 
-              href="/login" 
-              className="inline-block bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition"
-            >
-              Go to Login
-            </Link>
+              
+              <h1 className="text-3xl font-bold text-gray-900 mb-4">Check Your Email!</h1>
+              
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                We've sent a verification link to <strong className="text-gray-900">{formData.email}</strong>. 
+                Please check your inbox and click the link to verify your account.
+              </p>
+              
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <p className="text-sm text-blue-800">
+                  💡 The verification link will expire in 24 hours.
+                </p>
+              </div>
+              
+              <Link href="/login">
+                <Button className="w-full" size="lg">
+                  Go to Login
+                </Button>
+              </Link>
+            </Card>
           </div>
         </div>
       </div>
@@ -108,198 +113,186 @@ export default function RegisterPage() {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8">
-          <h1 className="text-3xl font-bold text-center mb-6">Sign Up</h1>
-          
-          <div className="flex gap-2 mb-6">
-            <button
-              type="button"
-              onClick={() => setUserType('user')}
-              className={`flex-1 py-2 px-4 rounded ${
-                userType === 'user'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-700'
-              }`}
-            >
-              User
-            </button>
-            <button
-              type="button"
-              onClick={() => setUserType('coach')}
-              className={`flex-1 py-2 px-4 rounded ${
-                userType === 'coach'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-700'
-              }`}
-            >
-              Coach
-            </button>
-          </div>
-
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-              {error}
+      <div className="container mx-auto px-4 py-32">
+        <div className="max-w-2xl mx-auto">
+          <Card padding="lg">
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
+              <p className="text-gray-600">Join our community today</p>
             </div>
-          )}
+            
+            {/* User Type Toggle */}
+            <div className="flex gap-2 mb-8 p-1 bg-gray-100 rounded-lg">
+              <button
+                type="button"
+                onClick={() => setUserType('user')}
+                className={`flex-1 py-3 px-4 rounded-md font-semibold transition-all ${
+                  userType === 'user'
+                    ? 'bg-white text-[#f91942] shadow-md'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                I'm an Athlete
+              </button>
+              <button
+                type="button"
+                onClick={() => setUserType('coach')}
+                className={`flex-1 py-3 px-4 rounded-md font-semibold transition-all ${
+                  userType === 'coach'
+                    ? 'bg-white text-[#f91942] shadow-md'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                I'm a Coach
+              </button>
+            </div>
 
-          <form onSubmit={handleSubmit}>
-            <div className="grid md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-gray-700 mb-2" htmlFor="firstName">
-                  First Name
-                </label>
-                <input
-                  id="firstName"
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 text-sm">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="grid md:grid-cols-2 gap-5">
+                <Input
+                  label="First Name"
                   name="firstName"
                   type="text"
                   value={formData.firstName}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  icon={<UserIcon size={18} />}
                   required
                 />
-              </div>
 
-              <div>
-                <label className="block text-gray-700 mb-2" htmlFor="lastName">
-                  Last Name
-                </label>
-                <input
-                  id="lastName"
+                <Input
+                  label="Last Name"
                   name="lastName"
                   type="text"
                   value={formData.lastName}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  icon={<UserIcon size={18} />}
                   required
                 />
               </div>
-            </div>
 
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-2" htmlFor="email">
-                Email
-              </label>
-              <input
-                id="email"
+              <Input
+                label="Email Address"
                 name="email"
                 type="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                icon={<Mail size={18} />}
+                placeholder="your@email.com"
                 required
               />
-            </div>
 
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-2" htmlFor="password">
-                Password
-              </label>
-              <input
-                id="password"
+              <Input
+                label="Password"
                 name="password"
                 type="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                icon={<Lock size={18} />}
+                helperText="Must be at least 6 characters"
                 required
                 minLength={6}
               />
-            </div>
 
-            {userType === 'coach' && (
-              <>
-                <div className="mb-4">
-                  <label className="block text-gray-700 mb-2" htmlFor="zipCode">
-                    Zip Code *
-                  </label>
-                  <input
-                    id="zipCode"
+              {userType === 'coach' && (
+                <>
+                  <div className="pt-4 border-t border-gray-200">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Coach Information</h3>
+                  </div>
+
+                  <Input
+                    label="Zip Code"
                     name="zipCode"
                     type="text"
                     value={formData.zipCode}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    icon={<MapPin size={18} />}
                     required
                   />
-                </div>
 
-                <div className="mb-4">
-                  <label className="block text-gray-700 mb-2" htmlFor="specialization">
-                    Specialization
-                  </label>
-                  <input
-                    id="specialization"
+                  <Input
+                    label="Specialization"
                     name="specialization"
                     type="text"
                     value={formData.specialization}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    icon={<Briefcase size={18} />}
                     placeholder="e.g., Quarterback, Wide Receiver"
                   />
-                </div>
 
-                <div className="mb-4">
-                  <label className="block text-gray-700 mb-2" htmlFor="phoneNumber">
-                    Phone Number
-                  </label>
-                  <input
-                    id="phoneNumber"
+                  <Input
+                    label="Phone Number"
                     name="phoneNumber"
                     type="tel"
                     value={formData.phoneNumber}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    icon={<Phone size={18} />}
                   />
-                </div>
 
-                <div className="mb-4">
-                  <label className="block text-gray-700 mb-2" htmlFor="yearsOfExperience">
-                    Years of Experience
-                  </label>
-                  <input
-                    id="yearsOfExperience"
+                  <Input
+                    label="Years of Experience"
                     name="yearsOfExperience"
                     type="number"
-                    value={formData.yearsOfExperience}
+                    value={formData.yearsOfExperience.toString()}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
                     min="0"
                   />
-                </div>
 
-                <div className="mb-4">
-                  <label className="block text-gray-700 mb-2" htmlFor="bio">
-                    Bio
-                  </label>
-                  <textarea
-                    id="bio"
-                    name="bio"
-                    value={formData.bio}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
-                    rows={4}
-                    placeholder="Tell us about your coaching experience..."
-                  />
-                </div>
-              </>
-            )}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Bio
+                    </label>
+                    <div className="relative">
+                      <FileText className="absolute left-3 top-3 text-gray-400" size={18} />
+                      <textarea
+                        name="bio"
+                        value={formData.bio}
+                        onChange={handleChange}
+                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#f91942] focus:border-transparent"
+                        rows={4}
+                        placeholder="Tell athletes about your coaching experience..."
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
-            >
-              {loading ? 'Creating account...' : 'Sign Up'}
-            </button>
-          </form>
+              <div className="pt-4">
+                <Button
+                  type="submit"
+                  className="w-full"
+                  size="lg"
+                  isLoading={loading}
+                >
+                  Create Account
+                </Button>
+              </div>
+            </form>
 
-          <p className="text-center mt-4 text-gray-600">
-            Already have an account?{' '}
-            <Link href="/login" className="text-blue-600 hover:underline">
-              Login
-            </Link>
-          </p>
+            <div className="mt-6 text-center">
+              <p className="text-gray-600">
+                Already have an account?{' '}
+                <Link href="/login" className="text-[#f91942] font-semibold hover:text-[#d01437]">
+                  Sign in
+                </Link>
+              </p>
+            </div>
+          </Card>
+
+          {/* Terms */}
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-500">
+              By creating an account, you agree to our{' '}
+              <a href="#" className="text-[#274abb] hover:underline">Terms of Service</a>
+              {' '}and{' '}
+              <a href="#" className="text-[#274abb] hover:underline">Privacy Policy</a>
+            </p>
+          </div>
         </div>
       </div>
     </div>
