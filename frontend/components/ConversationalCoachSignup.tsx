@@ -64,7 +64,7 @@ export default function ConversationalCoachSignup({ onSuccess }: ConversationalC
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'yearsOfExperience' ? parseInt(value) || 0 : value
+      [name]: name === 'yearsOfExperience' ? (value === '' ? 0 : parseInt(value) || 0) : value
     }));
     setError('');
   };
@@ -83,9 +83,13 @@ export default function ConversationalCoachSignup({ onSuccess }: ConversationalC
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && step < totalSteps) {
+    if (e.key === 'Enter') {
       e.preventDefault();
-      handleNext();
+      if (step < totalSteps) {
+        handleNext();
+      } else {
+        handleSubmit();
+      }
     }
   };
 
@@ -104,7 +108,8 @@ export default function ConversationalCoachSignup({ onSuccess }: ConversationalC
         }
         break;
       case 3:
-        if (!formData.email.trim() || !formData.email.includes('@')) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!formData.email.trim() || !emailRegex.test(formData.email)) {
           setError('Please enter a valid email address');
           return false;
         }

@@ -211,8 +211,10 @@ export default function RegisterPage() {
             <>
               <div className="text-center mb-8">
                 <button
+                  type="button"
                   onClick={() => setUserType('user')}
                   className="text-sm text-gray-600 hover:text-gray-900 underline mb-4"
+                  aria-label="Go back to account type selection"
                 >
                   ← Back to account type selection
                 </button>
