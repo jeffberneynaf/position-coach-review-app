@@ -32,4 +32,6 @@ public class User
     
     // Navigation property for submitted reviews
     public ICollection<Review> Reviews { get; set; } = new List<Review>();
+    
+    public AthleteProfile? AthleteProfile { get; set; }
 }

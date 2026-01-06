@@ -16,6 +16,11 @@ public class ApplicationDbContext : DbContext
     public DbSet<SubscriptionTier> SubscriptionTiers { get; set; }
     public DbSet<Client> Clients { get; set; }
     public DbSet<ZipCode> ZipCodes { get; set; }
+    public DbSet<AthleteProfile> AthleteProfiles { get; set; }
+    public DbSet<CoachMatchProfile> CoachMatchProfiles { get; set; }
+    public DbSet<MatchModel> MatchModels { get; set; }
+    public DbSet<MatchInteraction> MatchInteractions { get; set; }
+    public DbSet<MatchPreference> MatchPreferences { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -44,6 +49,56 @@ public class ApplicationDbContext : DbContext
             .WithMany(c => c.Clients)
             .HasForeignKey(c => c.CoachId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // Matchmaking relationships
+        modelBuilder.Entity<AthleteProfile>()
+            .HasOne(ap => ap.User)
+            .WithOne(u => u.AthleteProfile)
+            .HasForeignKey<AthleteProfile>(ap => ap.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<CoachMatchProfile>()
+            .HasOne(cmp => cmp.Coach)
+            .WithOne(c => c.MatchProfile)
+            .HasForeignKey<CoachMatchProfile>(cmp => cmp.CoachId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<MatchModel>()
+            .HasOne(m => m.AthleteProfile)
+            .WithMany(ap => ap.Matches)
+            .HasForeignKey(m => m.AthleteProfileId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<MatchModel>()
+            .HasOne(m => m.CoachMatchProfile)
+            .WithMany(cmp => cmp.Matches)
+            .HasForeignKey(m => m.CoachMatchProfileId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<MatchInteraction>()
+            .HasOne(mi => mi.Match)
+            .WithMany(m => m.Interactions)
+            .HasForeignKey(mi => mi.MatchId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<MatchPreference>()
+            .HasOne(mp => mp.AthleteProfile)
+            .WithMany(ap => ap.MatchPreferences)
+            .HasForeignKey(mp => mp.AthleteProfileId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Create indexes for matchmaking queries
+        modelBuilder.Entity<AthleteProfile>()
+            .HasIndex(ap => ap.Position);
+        
+        modelBuilder.Entity<AthleteProfile>()
+            .HasIndex(ap => ap.SkillLevel);
+        
+        modelBuilder.Entity<AthleteProfile>()
+            .HasIndex(ap => ap.ZipCode);
+
+        modelBuilder.Entity<CoachMatchProfile>()
+            .HasIndex(cmp => cmp.PositionsCoached);
 
         // Seed subscription tiers
         modelBuilder.Entity<SubscriptionTier>().HasData(

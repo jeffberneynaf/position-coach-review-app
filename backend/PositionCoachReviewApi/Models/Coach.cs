@@ -52,4 +52,5 @@ public class Coach
     // Navigation properties
     public ICollection<Review> Reviews { get; set; } = new List<Review>();
     public ICollection<Client> Clients { get; set; } = new List<Client>();
+    public CoachMatchProfile? MatchProfile { get; set; }
 }
