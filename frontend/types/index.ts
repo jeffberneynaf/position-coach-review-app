@@ -33,6 +33,26 @@ export interface RegisterCoachRequest extends RegisterUserRequest {
   specialization?: string;
   phoneNumber?: string;
   yearsOfExperience?: number;
+  // Matchmaking fields (optional)
+  coachingStyle?: string;
+  communicationStyle?: string;
+  trainingPhilosophy?: string;
+  specialties?: string[];
+  positionsCoached?: string[];
+  skillLevelsAccepted?: string[];
+  acceptsGroupTraining?: boolean;
+  acceptsOneOnOne?: boolean;
+  availableDays?: string[];
+  availableTimeSlots?: string[];
+  maxNewClientsPerMonth?: number;
+  sessionPriceMin?: number;
+  sessionPriceMax?: number;
+  travelRadiusMiles?: number;
+  offersVirtualSessions?: boolean;
+  offersInPersonSessions?: boolean;
+  certifications?: string[];
+  minAgeAccepted?: number;
+  maxAgeAccepted?: number;
 }
 
 export interface CoachProfile {
