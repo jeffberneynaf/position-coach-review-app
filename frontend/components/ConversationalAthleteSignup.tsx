@@ -421,15 +421,18 @@ export default function ConversationalAthleteSignup({ onSuccess }: Conversationa
               />
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="position" className="block text-sm font-medium text-gray-700 mb-2">
                   Position <span className="text-red-500">*</span>
                 </label>
                 <select
+                  id="position"
                   name="position"
                   value={formData.position}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#f91942] focus:border-transparent"
                   required
+                  aria-required="true"
+                  aria-label="Select football position"
                 >
                   <option value="">Select position...</option>
                   {footballPositions.map((pos) => (
@@ -439,15 +442,18 @@ export default function ConversationalAthleteSignup({ onSuccess }: Conversationa
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="skillLevel" className="block text-sm font-medium text-gray-700 mb-2">
                   Skill Level <span className="text-red-500">*</span>
                 </label>
                 <select
+                  id="skillLevel"
                   name="skillLevel"
                   value={formData.skillLevel}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#f91942] focus:border-transparent"
                   required
+                  aria-required="true"
+                  aria-label="Select skill level"
                 >
                   <option value="">Select skill level...</option>
                   {skillLevels.map((level) => (
@@ -487,14 +493,16 @@ export default function ConversationalAthleteSignup({ onSuccess }: Conversationa
               />
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="trainingIntensity" className="block text-sm font-medium text-gray-700 mb-2">
                   Training Intensity
                 </label>
                 <select
+                  id="trainingIntensity"
                   name="trainingIntensity"
                   value={formData.trainingIntensity}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#f91942] focus:border-transparent"
+                  aria-label="Select training intensity"
                 >
                   <option value="">Select intensity...</option>
                   {trainingIntensities.map((intensity) => (
@@ -504,14 +512,16 @@ export default function ConversationalAthleteSignup({ onSuccess }: Conversationa
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="preferredSchedule" className="block text-sm font-medium text-gray-700 mb-2">
                   Preferred Schedule
                 </label>
                 <select
+                  id="preferredSchedule"
                   name="preferredSchedule"
                   value={formData.preferredSchedule}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#f91942] focus:border-transparent"
+                  aria-label="Select preferred schedule"
                 >
                   <option value="">Select schedule...</option>
                   {schedules.map((schedule) => (
@@ -532,14 +542,16 @@ export default function ConversationalAthleteSignup({ onSuccess }: Conversationa
               />
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="sessionDuration" className="block text-sm font-medium text-gray-700 mb-2">
                   Preferred Session Duration
                 </label>
                 <select
+                  id="sessionDuration"
                   name="sessionDuration"
                   value={formData.sessionDuration}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#f91942] focus:border-transparent"
+                  aria-label="Select preferred session duration"
                 >
                   <option value="">Select duration...</option>
                   {durations.map((duration) => (
@@ -565,14 +577,16 @@ export default function ConversationalAthleteSignup({ onSuccess }: Conversationa
 
             <div className="space-y-5 pt-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="preferredCoachingStyle" className="block text-sm font-medium text-gray-700 mb-2">
                   Preferred Coaching Style
                 </label>
                 <select
+                  id="preferredCoachingStyle"
                   name="preferredCoachingStyle"
                   value={formData.preferredCoachingStyle}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#f91942] focus:border-transparent"
+                  aria-label="Select preferred coaching style"
                 >
                   <option value="">Select style...</option>
                   {coachingStyles.map((style) => (
@@ -582,14 +596,16 @@ export default function ConversationalAthleteSignup({ onSuccess }: Conversationa
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="preferredCommunicationStyle" className="block text-sm font-medium text-gray-700 mb-2">
                   Preferred Communication Style
                 </label>
                 <select
+                  id="preferredCommunicationStyle"
                   name="preferredCommunicationStyle"
                   value={formData.preferredCommunicationStyle}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#f91942] focus:border-transparent"
+                  aria-label="Select preferred communication style"
                 >
                   <option value="">Select style...</option>
                   {communicationStyles.map((style) => (
@@ -603,8 +619,9 @@ export default function ConversationalAthleteSignup({ onSuccess }: Conversationa
                   Training Format Preference
                 </label>
                 <div className="space-y-2">
-                  <label className="flex items-center space-x-2 cursor-pointer">
+                  <label htmlFor="preferOneOnOne" className="flex items-center space-x-2 cursor-pointer">
                     <input
+                      id="preferOneOnOne"
                       type="checkbox"
                       name="preferOneOnOne"
                       checked={formData.preferOneOnOne}
@@ -613,8 +630,9 @@ export default function ConversationalAthleteSignup({ onSuccess }: Conversationa
                     />
                     <span className="text-sm text-gray-700">One-on-One Training</span>
                   </label>
-                  <label className="flex items-center space-x-2 cursor-pointer">
+                  <label htmlFor="preferGroupTraining" className="flex items-center space-x-2 cursor-pointer">
                     <input
+                      id="preferGroupTraining"
                       type="checkbox"
                       name="preferGroupTraining"
                       checked={formData.preferGroupTraining}
@@ -823,8 +841,9 @@ export default function ConversationalAthleteSignup({ onSuccess }: Conversationa
               />
 
               <div>
-                <label className="flex items-center space-x-2 cursor-pointer">
+                <label htmlFor="willingToTravel" className="flex items-center space-x-2 cursor-pointer">
                   <input
+                    id="willingToTravel"
                     type="checkbox"
                     name="willingToTravel"
                     checked={formData.willingToTravel}

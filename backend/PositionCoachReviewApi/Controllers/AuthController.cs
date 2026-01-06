@@ -62,11 +62,17 @@ public class AuthController : ControllerBase
         // Create AthleteProfile if athlete data is provided
         if (!string.IsNullOrEmpty(request.AthleteName))
         {
+            // Require DateOfBirth when creating athlete profile
+            if (!request.DateOfBirth.HasValue)
+            {
+                return BadRequest(new { message = "Date of birth is required when creating an athlete profile" });
+            }
+
             var athleteProfile = new AthleteProfile
             {
                 UserId = user.Id,
                 AthleteName = request.AthleteName,
-                DateOfBirth = request.DateOfBirth ?? DateTime.UtcNow.AddYears(-18),
+                DateOfBirth = request.DateOfBirth.Value,
                 Position = request.Position ?? string.Empty,
                 SkillLevel = request.SkillLevel ?? string.Empty,
                 ZipCode = request.ZipCode ?? string.Empty,
