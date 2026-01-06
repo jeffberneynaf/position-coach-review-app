@@ -1,11 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { matchmakingApi } from '@/lib/api';
 import { Match } from '@/types/matchmaking';
 import { Heart, X, Info } from 'lucide-react';
 
 export default function DiscoverPage() {
+  const router = useRouter();
   const [matches, setMatches] = useState<Match[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -88,7 +90,7 @@ export default function DiscoverPage() {
             You've seen all available matches. Check back later for new coaches!
           </p>
           <button
-            onClick={() => window.location.href = '/matchmaking/matches'}
+            onClick={() => router.push('/matchmaking/matches')}
             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             View Your Matches

@@ -42,7 +42,7 @@ export default function AthleteProfilePage() {
         // Pre-fill form with existing data
         setFormData({
           athleteName: response.data.athleteName,
-          dateOfBirth: response.data.dateOfBirth.split('T')[0],
+          dateOfBirth: response.data.dateOfBirth.substring(0, 10), // Extract YYYY-MM-DD
           position: response.data.position,
           skillLevel: response.data.skillLevel,
           zipCode: response.data.zipCode,

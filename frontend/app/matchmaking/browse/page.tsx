@@ -1,12 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { matchmakingApi } from '@/lib/api';
 import { Match, FindMatchesRequest } from '@/types/matchmaking';
 import MatchCard from '@/components/matchmaking/MatchCard';
 import { Search, Filter } from 'lucide-react';
 
 export default function BrowseMatches() {
+  const router = useRouter();
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -198,7 +200,7 @@ export default function BrowseMatches() {
                   No matches found. Try adjusting your filters or creating your athlete profile.
                 </p>
                 <button
-                  onClick={() => window.location.href = '/matchmaking/athlete-profile'}
+                  onClick={() => router.push('/matchmaking/athlete-profile')}
                   className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >
                   Create Athlete Profile

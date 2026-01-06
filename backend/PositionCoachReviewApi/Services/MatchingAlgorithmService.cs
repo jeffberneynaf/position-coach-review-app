@@ -59,8 +59,9 @@ public class MatchingAlgorithmService : IMatchingAlgorithmService
                               breakdown.TrainingFormatScore +
                               breakdown.CommunicationScore;
 
-        // Keep only top 5 reasons
-        reasons = reasons.Take(5).ToList();
+        // Keep only top reasons
+        const int MaxMatchReasons = 5;
+        reasons = reasons.Take(MaxMatchReasons).ToList();
 
         return (breakdown.TotalScore, breakdown, reasons);
     }
@@ -149,10 +150,11 @@ public class MatchingAlgorithmService : IMatchingAlgorithmService
                 reasons.Add($"Matches your training goals: {string.Join(", ", matchingGoals.Take(2))}");
             }
         }
-        catch
+        catch (JsonException)
         {
             // If JSON parsing fails, give partial credit
-            score += maxPoints * 0.15;
+            const double PartialCreditPercentage = 0.15;
+            score += maxPoints * PartialCreditPercentage;
         }
 
         return score;

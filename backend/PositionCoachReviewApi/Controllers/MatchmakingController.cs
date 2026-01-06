@@ -794,7 +794,10 @@ public class MatchmakingController : ControllerBase
             if (!string.IsNullOrEmpty(profile.AreasForImprovementJson))
                 areasForImprovement = JsonSerializer.Deserialize<List<string>>(profile.AreasForImprovementJson) ?? new();
         }
-        catch { }
+        catch (JsonException)
+        {
+            // Use empty lists if JSON parsing fails
+        }
 
         return new AthleteProfileDto
         {
@@ -849,7 +852,10 @@ public class MatchmakingController : ControllerBase
             if (!string.IsNullOrEmpty(profile.PreferredAthleteTraitsJson))
                 preferredAthleteTraits = JsonSerializer.Deserialize<List<string>>(profile.PreferredAthleteTraitsJson) ?? new();
         }
-        catch { }
+        catch (JsonException)
+        {
+            // Use empty lists if JSON parsing fails
+        }
 
         return new CoachMatchProfileDto
         {
@@ -901,7 +907,10 @@ public class MatchmakingController : ControllerBase
             if (!string.IsNullOrEmpty(match.ScoreBreakdownJson))
                 scoreBreakdown = JsonSerializer.Deserialize<MatchScoreBreakdown>(match.ScoreBreakdownJson);
         }
-        catch { }
+        catch (JsonException)
+        {
+            // Use defaults if JSON parsing fails
+        }
 
         return new MatchDto
         {
