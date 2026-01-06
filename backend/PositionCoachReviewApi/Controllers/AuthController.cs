@@ -59,6 +59,43 @@ public class AuthController : ControllerBase
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
+        // Create AthleteProfile if athlete data is provided
+        if (!string.IsNullOrEmpty(request.AthleteName))
+        {
+            // Require DateOfBirth when creating athlete profile
+            if (!request.DateOfBirth.HasValue)
+            {
+                return BadRequest(new { message = "Date of birth is required when creating an athlete profile" });
+            }
+
+            var athleteProfile = new AthleteProfile
+            {
+                UserId = user.Id,
+                AthleteName = request.AthleteName,
+                DateOfBirth = request.DateOfBirth.Value,
+                Position = request.Position ?? string.Empty,
+                SkillLevel = request.SkillLevel ?? string.Empty,
+                ZipCode = request.ZipCode ?? string.Empty,
+                TrainingIntensity = request.TrainingIntensity ?? string.Empty,
+                PreferredSchedule = request.PreferredSchedule ?? string.Empty,
+                SessionsPerWeek = request.SessionsPerWeek ?? 0,
+                SessionDuration = request.SessionDuration ?? string.Empty,
+                PreferredCoachingStyle = request.PreferredCoachingStyle ?? string.Empty,
+                PreferredCommunicationStyle = request.PreferredCommunicationStyle ?? string.Empty,
+                PreferGroupTraining = request.PreferGroupTraining,
+                PreferOneOnOne = request.PreferOneOnOne,
+                WillingToTravel = request.WillingToTravel,
+                PrimaryGoalsJson = JsonSerializer.Serialize(request.PrimaryGoals ?? new List<string>()),
+                AreasForImprovementJson = JsonSerializer.Serialize(request.AreasForImprovement ?? new List<string>()),
+                SpecialNeeds = request.SpecialNeeds ?? string.Empty,
+                MaxBudgetPerSession = request.MaxBudgetPerSession ?? 0,
+                MaxTravelDistanceMiles = request.MaxTravelDistanceMiles ?? 0
+            };
+            
+            _context.AthleteProfiles.Add(athleteProfile);
+            await _context.SaveChangesAsync();
+        }
+
         // Send verification email
         await _emailService.SendVerificationEmailAsync(user.Email, user.FirstName, verificationToken, "User");
 

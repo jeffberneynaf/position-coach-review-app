@@ -27,6 +27,27 @@ public class RegisterUserRequest
     
     [Required]
     public string LastName { get; set; } = string.Empty;
+    
+    // Athlete profile fields (optional - profile created only if AthleteName is provided)
+    public string? AthleteName { get; set; }
+    public DateTime? DateOfBirth { get; set; }
+    public string? Position { get; set; }
+    public string? SkillLevel { get; set; }
+    public string? ZipCode { get; set; }
+    public string? TrainingIntensity { get; set; }
+    public string? PreferredSchedule { get; set; }
+    public string? SessionDuration { get; set; }
+    public int? SessionsPerWeek { get; set; }
+    public string? PreferredCoachingStyle { get; set; }
+    public string? PreferredCommunicationStyle { get; set; }
+    public bool PreferGroupTraining { get; set; }
+    public bool PreferOneOnOne { get; set; }
+    public bool WillingToTravel { get; set; }
+    public List<string>? PrimaryGoals { get; set; }
+    public List<string>? AreasForImprovement { get; set; }
+    public string? SpecialNeeds { get; set; }
+    public decimal? MaxBudgetPerSession { get; set; }
+    public int? MaxTravelDistanceMiles { get; set; }
 }
 
 public class RegisterCoachRequest
