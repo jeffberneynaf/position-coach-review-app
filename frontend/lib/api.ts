@@ -38,42 +38,42 @@ api.interceptors.request.use((config) => {
 export const matchmakingApi = {
   // Athlete Profile
   createAthleteProfile: (data: CreateAthleteProfileRequest) =>
-    api.post<AthleteProfile>('/matchmaking/athlete-profile', data),
+    api.post<AthleteProfile>('/api/matchmaking/athlete-profile', data),
   
   getAthleteProfile: () =>
-    api.get<AthleteProfile>('/matchmaking/athlete-profile'),
+    api.get<AthleteProfile>('/api/Matchmaking/athlete-profile'),
   
   updateAthleteProfile: (data: UpdateAthleteProfileRequest) =>
-    api.put<AthleteProfile>('/matchmaking/athlete-profile', data),
+    api.put<AthleteProfile>('/api/matchmaking/athlete-profile', data),
 
   // Coach Match Profile
   createCoachMatchProfile: (data: CreateCoachMatchProfileRequest) =>
-    api.post<CoachMatchProfile>('/matchmaking/coach-profile', data),
+    api.post<CoachMatchProfile>('/api/matchmaking/coach-profile', data),
   
   getCoachMatchProfile: () =>
-    api.get<CoachMatchProfile>('/matchmaking/coach-profile'),
+    api.get<CoachMatchProfile>('/api/matchmaking/coach-profile'),
   
   updateCoachMatchProfile: (data: UpdateCoachMatchProfileRequest) =>
-    api.put<CoachMatchProfile>('/matchmaking/coach-profile', data),
+    api.put<CoachMatchProfile>('/api/matchmaking/coach-profile', data),
 
   // Matches
   findMatches: (data: FindMatchesRequest) =>
-    api.post<PaginatedMatchesResponse>('/matchmaking/find-matches', data),
+    api.post<PaginatedMatchesResponse>('/api/matchmaking/find-matches', data),
   
   getMatches: (status?: string) =>
-    api.get<Match[]>('/matchmaking/matches', { params: { status } }),
+    api.get<Match[]>('/api/matchmaking/matches', { params: { status } }),
   
   getMatch: (id: number) =>
-    api.get<Match>(`/matchmaking/matches/${id}`),
+    api.get<Match>(`/api/matchmaking/matches/${id}`),
   
   interactWithMatch: (id: number, data: MatchInteractionRequest) =>
-    api.post<Match>(`/matchmaking/matches/${id}/interact`, data),
+    api.post<Match>(`/api/matchmaking/matches/${id}/interact`, data),
   
   updateMatchStatus: (id: number, data: UpdateMatchStatusRequest) =>
-    api.put<Match>(`/matchmaking/matches/${id}/status`, data),
+    api.put<Match>(`/api/matchmaking/matches/${id}/status`, data),
   
   getStats: () =>
-    api.get<MatchmakingStats>('/matchmaking/stats'),
+    api.get<MatchmakingStats>('/api/matchmaking/stats'),
 };
 
 export default api;
