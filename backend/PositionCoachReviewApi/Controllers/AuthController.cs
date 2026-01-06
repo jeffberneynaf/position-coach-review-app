@@ -6,6 +6,7 @@ using PositionCoachReviewApi.Models.DTOs;
 using PositionCoachReviewApi.Services;
 using BCrypt.Net;
 using System.Security.Cryptography;
+using System.Text.Json;
 
 namespace PositionCoachReviewApi.Controllers;
 
@@ -98,6 +99,38 @@ public class AuthController : ControllerBase
 
         _context.Coaches.Add(coach);
         await _context.SaveChangesAsync();
+
+        // Create CoachMatchProfile if matchmaking data is provided
+        if (!string.IsNullOrEmpty(request.CoachingStyle))
+        {
+            var matchProfile = new CoachMatchProfile
+            {
+                CoachId = coach.Id,
+                CoachingStyle = request.CoachingStyle ?? string.Empty,
+                CommunicationStyle = request.CommunicationStyle ?? string.Empty,
+                TrainingPhilosophy = request.TrainingPhilosophy ?? string.Empty,
+                SpecialtiesJson = request.Specialties != null ? JsonSerializer.Serialize(request.Specialties) : "[]",
+                PositionsCoached = request.PositionsCoached != null ? JsonSerializer.Serialize(request.PositionsCoached) : "[]",
+                SkillLevelsAccepted = request.SkillLevelsAccepted != null ? JsonSerializer.Serialize(request.SkillLevelsAccepted) : "[]",
+                AcceptsGroupTraining = request.AcceptsGroupTraining,
+                AcceptsOneOnOne = request.AcceptsOneOnOne,
+                AvailableDaysJson = request.AvailableDays != null ? JsonSerializer.Serialize(request.AvailableDays) : "[]",
+                AvailableTimeSlotsJson = request.AvailableTimeSlots != null ? JsonSerializer.Serialize(request.AvailableTimeSlots) : "[]",
+                MaxNewClientsPerMonth = request.MaxNewClientsPerMonth,
+                SessionPriceMin = request.SessionPriceMin,
+                SessionPriceMax = request.SessionPriceMax,
+                TravelRadiusMiles = request.TravelRadiusMiles,
+                OffersVirtualSessions = request.OffersVirtualSessions,
+                OffersInPersonSessions = request.OffersInPersonSessions,
+                YearsCoachingPosition = request.YearsOfExperience,
+                CertificationsJson = request.Certifications != null ? JsonSerializer.Serialize(request.Certifications) : "[]",
+                MinAgeAccepted = request.MinAgeAccepted,
+                MaxAgeAccepted = request.MaxAgeAccepted
+            };
+
+            _context.CoachMatchProfiles.Add(matchProfile);
+            await _context.SaveChangesAsync();
+        }
 
         // Send verification email
         await _emailService.SendVerificationEmailAsync(coach.Email, coach.FirstName, verificationToken, "Coach");
