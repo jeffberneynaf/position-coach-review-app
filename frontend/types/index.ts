@@ -25,6 +25,26 @@ export interface RegisterUserRequest {
   password: string;
   firstName: string;
   lastName: string;
+  // Athlete profile fields (optional)
+  athleteName?: string;
+  dateOfBirth?: string;
+  position?: string;
+  skillLevel?: string;
+  zipCode?: string;
+  trainingIntensity?: string;
+  preferredSchedule?: string;
+  sessionDuration?: string;
+  sessionsPerWeek?: number;
+  preferredCoachingStyle?: string;
+  preferredCommunicationStyle?: string;
+  preferGroupTraining?: boolean;
+  preferOneOnOne?: boolean;
+  willingToTravel?: boolean;
+  primaryGoals?: string[];
+  areasForImprovement?: string[];
+  specialNeeds?: string;
+  maxBudgetPerSession?: number;
+  maxTravelDistanceMiles?: number;
 }
 
 export interface RegisterCoachRequest extends RegisterUserRequest {
