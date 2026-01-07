@@ -5,9 +5,11 @@ import { useRouter } from 'next/navigation';
 import { matchmakingApi } from '@/lib/api';
 import { CreateAthleteProfileRequest, AthleteProfile } from '@/types/matchmaking';
 import { ChevronRight, ChevronLeft, CheckCircle } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function AthleteProfilePage() {
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,38 +37,44 @@ export default function AthleteProfilePage() {
   });
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await matchmakingApi.getAthleteProfile();
-        setExistingProfile(response.data);
-        // Pre-fill form with existing data
-        setFormData({
-          athleteName: response.data.athleteName,
-          dateOfBirth: response.data.dateOfBirth.substring(0, 10), // Extract YYYY-MM-DD
-          position: response.data.position,
-          skillLevel: response.data.skillLevel,
-          zipCode: response.data.zipCode,
-          trainingIntensity: response.data.trainingIntensity,
-          preferredSchedule: response.data.preferredSchedule,
-          sessionsPerWeek: response.data.sessionsPerWeek,
-          sessionDuration: response.data.sessionDuration,
-          preferredCoachingStyle: response.data.preferredCoachingStyle,
-          preferredCommunicationStyle: response.data.preferredCommunicationStyle,
-          preferGroupTraining: response.data.preferGroupTraining,
-          preferOneOnOne: response.data.preferOneOnOne,
-          primaryGoals: response.data.primaryGoals,
-          areasForImprovement: response.data.areasForImprovement,
-          specialNeeds: response.data.specialNeeds,
-          maxBudgetPerSession: response.data.maxBudgetPerSession,
-          maxTravelDistanceMiles: response.data.maxTravelDistanceMiles,
-          willingToTravel: response.data.willingToTravel,
-        });
-      } catch (err) {
-        // No profile exists yet, that's fine
-      }
-    };
-    fetchProfile();
-  }, []);
+    if (!authLoading && !user) {
+      router.push('/login');
+      return;
+    }
+    if (user) {
+      const fetchProfile = async () => {
+        try {
+          const response = await matchmakingApi.getAthleteProfile();
+          setExistingProfile(response.data);
+          // Pre-fill form with existing data
+          setFormData({
+            athleteName: response.data.athleteName,
+            dateOfBirth: response.data.dateOfBirth.substring(0, 10), // Extract YYYY-MM-DD
+            position: response.data.position,
+            skillLevel: response.data.skillLevel,
+            zipCode: response.data.zipCode,
+            trainingIntensity: response.data.trainingIntensity,
+            preferredSchedule: response.data.preferredSchedule,
+            sessionsPerWeek: response.data.sessionsPerWeek,
+            sessionDuration: response.data.sessionDuration,
+            preferredCoachingStyle: response.data.preferredCoachingStyle,
+            preferredCommunicationStyle: response.data.preferredCommunicationStyle,
+            preferGroupTraining: response.data.preferGroupTraining,
+            preferOneOnOne: response.data.preferOneOnOne,
+            primaryGoals: response.data.primaryGoals,
+            areasForImprovement: response.data.areasForImprovement,
+            specialNeeds: response.data.specialNeeds,
+            maxBudgetPerSession: response.data.maxBudgetPerSession,
+            maxTravelDistanceMiles: response.data.maxTravelDistanceMiles,
+            willingToTravel: response.data.willingToTravel,
+          });
+        } catch (err) {
+          // No profile exists yet, that's fine
+        }
+      };
+      fetchProfile();
+    }
+  }, [user, authLoading, router]);
 
   const handleSubmit = async () => {
     setLoading(true);

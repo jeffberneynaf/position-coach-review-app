@@ -5,9 +5,11 @@ import { useRouter } from 'next/navigation';
 import { matchmakingApi } from '@/lib/api';
 import { CreateCoachMatchProfileRequest, CoachMatchProfile } from '@/types/matchmaking';
 import { ChevronRight, ChevronLeft, CheckCircle } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function CoachProfilePage() {
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,40 +40,46 @@ export default function CoachProfilePage() {
   });
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await matchmakingApi.getCoachMatchProfile();
-        setExistingProfile(response.data);
-        setFormData({
-          coachingStyle: response.data.coachingStyle,
-          communicationStyle: response.data.communicationStyle,
-          trainingPhilosophy: response.data.trainingPhilosophy,
-          specialties: response.data.specialties,
-          positionsCoached: response.data.positionsCoached,
-          skillLevelsAccepted: response.data.skillLevelsAccepted,
-          acceptsGroupTraining: response.data.acceptsGroupTraining,
-          acceptsOneOnOne: response.data.acceptsOneOnOne,
-          availableDays: response.data.availableDays,
-          availableTimeSlots: response.data.availableTimeSlots,
-          maxNewClientsPerMonth: response.data.maxNewClientsPerMonth,
-          sessionPriceMin: response.data.sessionPriceMin,
-          sessionPriceMax: response.data.sessionPriceMax,
-          travelRadiusMiles: response.data.travelRadiusMiles,
-          offersVirtualSessions: response.data.offersVirtualSessions,
-          offersInPersonSessions: response.data.offersInPersonSessions,
-          successStories: response.data.successStories,
-          yearsCoachingPosition: response.data.yearsCoachingPosition,
-          certifications: response.data.certifications,
-          preferredAthleteTraits: response.data.preferredAthleteTraits,
-          minAgeAccepted: response.data.minAgeAccepted,
-          maxAgeAccepted: response.data.maxAgeAccepted,
-        });
-      } catch (err) {
-        // No profile exists yet
-      }
-    };
-    fetchProfile();
-  }, []);
+    if (!authLoading && !user) {
+      router.push('/login');
+      return;
+    }
+    if (user) {
+      const fetchProfile = async () => {
+        try {
+          const response = await matchmakingApi.getCoachMatchProfile();
+          setExistingProfile(response.data);
+          setFormData({
+            coachingStyle: response.data.coachingStyle,
+            communicationStyle: response.data.communicationStyle,
+            trainingPhilosophy: response.data.trainingPhilosophy,
+            specialties: response.data.specialties,
+            positionsCoached: response.data.positionsCoached,
+            skillLevelsAccepted: response.data.skillLevelsAccepted,
+            acceptsGroupTraining: response.data.acceptsGroupTraining,
+            acceptsOneOnOne: response.data.acceptsOneOnOne,
+            availableDays: response.data.availableDays,
+            availableTimeSlots: response.data.availableTimeSlots,
+            maxNewClientsPerMonth: response.data.maxNewClientsPerMonth,
+            sessionPriceMin: response.data.sessionPriceMin,
+            sessionPriceMax: response.data.sessionPriceMax,
+            travelRadiusMiles: response.data.travelRadiusMiles,
+            offersVirtualSessions: response.data.offersVirtualSessions,
+            offersInPersonSessions: response.data.offersInPersonSessions,
+            successStories: response.data.successStories,
+            yearsCoachingPosition: response.data.yearsCoachingPosition,
+            certifications: response.data.certifications,
+            preferredAthleteTraits: response.data.preferredAthleteTraits,
+            minAgeAccepted: response.data.minAgeAccepted,
+            maxAgeAccepted: response.data.maxAgeAccepted,
+          });
+        } catch (err) {
+          // No profile exists yet
+        }
+      };
+      fetchProfile();
+    }
+  }, [user, authLoading, router]);
 
   const handleSubmit = async () => {
     setLoading(true);

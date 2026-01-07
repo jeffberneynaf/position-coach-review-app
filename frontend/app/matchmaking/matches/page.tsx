@@ -6,17 +6,25 @@ import { matchmakingApi } from '@/lib/api';
 import { Match } from '@/types/matchmaking';
 import MatchCard from '@/components/matchmaking/MatchCard';
 import { Heart, CheckCircle, List } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function MatchesPage() {
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string>('all');
 
   useEffect(() => {
-    fetchMatches();
-  }, [activeTab]);
+    if (!authLoading && !user) {
+      router.push('/login');
+      return;
+    }
+    if (user) {
+      fetchMatches();
+    }
+  }, [activeTab, user, authLoading, router]);
 
   const fetchMatches = async () => {
     setLoading(true);
