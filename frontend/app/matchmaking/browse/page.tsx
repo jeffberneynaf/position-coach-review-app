@@ -6,9 +6,11 @@ import { matchmakingApi } from '@/lib/api';
 import { Match, FindMatchesRequest } from '@/types/matchmaking';
 import MatchCard from '@/components/matchmaking/MatchCard';
 import { Search, Filter } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function BrowseMatches() {
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,8 +22,14 @@ export default function BrowseMatches() {
   });
 
   useEffect(() => {
-    fetchMatches();
-  }, [filters]);
+    if (!authLoading && !user) {
+      router.push('/login');
+      return;
+    }
+    if (user) {
+      fetchMatches();
+    }
+  }, [filters, user, authLoading, router]);
 
   const fetchMatches = async () => {
     setLoading(true);

@@ -6,10 +6,12 @@ import { matchmakingApi } from '@/lib/api';
 import { Match } from '@/types/matchmaking';
 import MatchScoreBreakdownComponent from '@/components/matchmaking/MatchScoreBreakdown';
 import { ArrowLeft, Mail, Phone, MapPin, Calendar, Heart, X } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function MatchDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const matchId = parseInt(params.id as string);
   
   const [match, setMatch] = useState<Match | null>(null);
@@ -17,8 +19,14 @@ export default function MatchDetailPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchMatch();
-  }, [matchId]);
+    if (!authLoading && !user) {
+      router.push('/login');
+      return;
+    }
+    if (user) {
+      fetchMatch();
+    }
+  }, [matchId, user, authLoading, router]);
 
   const fetchMatch = async () => {
     setLoading(true);

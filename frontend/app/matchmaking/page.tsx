@@ -1,19 +1,19 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Users, Search, Heart, TrendingUp } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function MatchmakingHub() {
   const router = useRouter();
-  const [userType, setUserType] = useState<string | null>(null);
+  const { user, loading } = useAuth();
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const storedUserType = localStorage.getItem('userType');
-      setUserType(storedUserType);
+    if (!loading && !user) {
+      router.push('/login');
     }
-  }, []);
+  }, [user, loading, router]);
 
   const features = [
     {
@@ -77,7 +77,7 @@ export default function MatchmakingHub() {
             Get Started
           </h2>
           
-          {userType === 'User' ? (
+          {user?.userType === 'User' ? (
             <div className="space-y-4">
               <p className="text-center text-gray-600 mb-6">
                 Create your athlete profile to start finding coaches that match your needs
@@ -97,7 +97,7 @@ export default function MatchmakingHub() {
                 </button>
               </div>
             </div>
-          ) : userType === 'Coach' ? (
+          ) : user?.userType === 'Coach' ? (
             <div className="space-y-4">
               <p className="text-center text-gray-600 mb-6">
                 Set up your match profile to help athletes find you
@@ -117,17 +117,23 @@ export default function MatchmakingHub() {
                 </button>
               </div>
             </div>
+          ) : user ? (
+            <div className="text-center">
+              <p className="text-red-600 mb-6">
+                Invalid user type. Please contact support.
+              </p>
+              <button
+                onClick={() => router.push('/dashboard')}
+                className="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg"
+              >
+                Go to Dashboard
+              </button>
+            </div>
           ) : (
             <div className="text-center">
               <p className="text-gray-600 mb-6">
-                Please log in to access the matchmaking system
+                Loading your profile...
               </p>
-              <button
-                onClick={() => router.push('/login')}
-                className="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg"
-              >
-                Log In
-              </button>
             </div>
           )}
         </div>
