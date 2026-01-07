@@ -117,7 +117,13 @@ export default function MatchmakingHub() {
                 </button>
               </div>
             </div>
-          ) : null}
+          ) : (
+            <div className="text-center">
+              <p className="text-gray-600 mb-6">
+                Loading your profile...
+              </p>
+            </div>
+          )}
         </div>
 
         {/* How It Works */}
