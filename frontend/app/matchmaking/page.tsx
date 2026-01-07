@@ -117,6 +117,18 @@ export default function MatchmakingHub() {
                 </button>
               </div>
             </div>
+          ) : user ? (
+            <div className="text-center">
+              <p className="text-red-600 mb-6">
+                Invalid user type. Please contact support.
+              </p>
+              <button
+                onClick={() => router.push('/dashboard')}
+                className="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg"
+              >
+                Go to Dashboard
+              </button>
+            </div>
           ) : (
             <div className="text-center">
               <p className="text-gray-600 mb-6">
