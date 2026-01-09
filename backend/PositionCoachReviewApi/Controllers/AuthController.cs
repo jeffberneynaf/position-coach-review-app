@@ -174,7 +174,7 @@ public class AuthController : ControllerBase
         // Send verification email
         await _emailService.SendVerificationEmailAsync(coach.Email, coach.FirstName, verificationToken, "Coach");
 
-        return Ok(new { message = "Registration successful! Please check your email to verify your account." });
+        return Ok(new { message = "Registration successful! Please check your email to verify your account.", coachId = coach.Id });
     }
 
     [HttpPost("login/user")]

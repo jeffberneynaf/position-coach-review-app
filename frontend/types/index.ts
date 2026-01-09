@@ -88,6 +88,8 @@ export interface CoachProfile {
   subscriptionTierName: string;
   averageRating: number;
   reviewCount: number;
+  photoUrl?: string | null;
+  thumbnailUrl?: string | null;
   reviews: Review[];
 }
 

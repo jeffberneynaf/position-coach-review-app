@@ -114,10 +114,20 @@ export default function CoachProfilePage() {
       <section className="gradient-secondary text-white pt-32 pb-12 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="flex flex-col md:flex-row items-start gap-8">
-            {/* Avatar */}
+            {/* Avatar/Profile Photo */}
             <div className="flex-shrink-0">
-              <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center text-[#274abb] text-4xl font-bold shadow-xl">
-                {coach.firstName.charAt(0)}{coach.lastName.charAt(0)}
+              <div className="w-32 h-32 rounded-full overflow-hidden shadow-xl">
+                {coach.photoUrl ? (
+                  <img
+                    src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '')}${coach.photoUrl}`}
+                    alt={`${coach.firstName} ${coach.lastName}`}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-white flex items-center justify-center text-[#274abb] text-4xl font-bold">
+                    {coach.firstName.charAt(0)}{coach.lastName.charAt(0)}
+                  </div>
+                )}
               </div>
             </div>
 
