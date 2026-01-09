@@ -49,6 +49,7 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IZipCodeService, ZipCodeService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IMatchingAlgorithmService, MatchingAlgorithmService>();
+builder.Services.AddScoped<IPhotoService, PhotoService>();
 
 // Configure CORS
 builder.Services.AddCors(options =>
@@ -74,6 +75,9 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseCors("AllowFrontend");
+
+// Enable static file serving for uploaded photos
+app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -43,6 +43,8 @@ public class CoachesController : ControllerBase
                 SubscriptionTierName = c.SubscriptionTier != null ? c.SubscriptionTier.Name : "Free",
                 AverageRating = c.Reviews.Any() ? c.Reviews.Average(r => r.Rating) : 0,
                 ReviewCount = c.Reviews.Count,
+                PhotoUrl = c.PhotoUrl,
+                ThumbnailUrl = c.ThumbnailUrl,
                 Reviews = c.Reviews.Select(r => new ReviewDto
                 {
                     Id = r.Id,
@@ -85,6 +87,8 @@ public class CoachesController : ControllerBase
             SubscriptionTierName = coach.SubscriptionTier?.Name ?? "Free",
             AverageRating = coach.Reviews.Any() ? coach.Reviews.Average(r => r.Rating) : 0,
             ReviewCount = coach.Reviews.Count,
+            PhotoUrl = coach.PhotoUrl,
+            ThumbnailUrl = coach.ThumbnailUrl,
             Reviews = coach.Reviews.Select(r => new ReviewDto
             {
                 Id = r.Id,
@@ -136,6 +140,8 @@ public class CoachesController : ControllerBase
                     SubscriptionTierName = c.SubscriptionTier != null ? c.SubscriptionTier.Name : "Free",
                     AverageRating = c.Reviews.Any() ? c.Reviews.Average(r => r.Rating) : 0,
                     ReviewCount = c.Reviews.Count,
+                    PhotoUrl = c.PhotoUrl,
+                    ThumbnailUrl = c.ThumbnailUrl,
                     Reviews = c.Reviews.Select(r => new ReviewDto
                     {
                         Id = r.Id,
@@ -185,6 +191,8 @@ public class CoachesController : ControllerBase
                 SubscriptionTierName = x.Coach.SubscriptionTier != null ? x.Coach.SubscriptionTier.Name : "Free",
                 AverageRating = x.Coach.Reviews.Any() ? x.Coach.Reviews.Average(r => r.Rating) : 0,
                 ReviewCount = x.Coach.Reviews.Count,
+                PhotoUrl = x.Coach.PhotoUrl,
+                ThumbnailUrl = x.Coach.ThumbnailUrl,
                 Reviews = x.Coach.Reviews.Select(r => new ReviewDto
                 {
                     Id = r.Id,
