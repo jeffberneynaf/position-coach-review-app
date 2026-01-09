@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { CoachProfile } from '@/types';
 import Card from './Card';
 import { Star, MapPin, Award, Briefcase } from 'lucide-react';
+import { getServerBaseUrl } from '@/lib/api';
 
 interface CoachCardProps {
   coach: CoachProfile;
@@ -41,7 +42,7 @@ export default function CoachCard({ coach }: CoachCardProps) {
         {/* Avatar or Photo */}
         {coach.profilePhotoUrl ? (
           <img 
-            src={`http://localhost:5000${coach.profilePhotoUrl}`} 
+            src={`${getServerBaseUrl()}${coach.profilePhotoUrl}`} 
             alt={`${coach.firstName} ${coach.lastName}`}
             className="w-20 h-20 mx-auto mb-4 rounded-full object-cover border-2 border-gray-200"
           />

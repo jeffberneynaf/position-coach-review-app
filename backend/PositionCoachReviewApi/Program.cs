@@ -1,6 +1,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using PositionCoachReviewApi.Data;
 using PositionCoachReviewApi.Services;
@@ -79,7 +80,7 @@ app.UseCors("AllowFrontend");
 // Serve static files from uploads directory
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
+    FileProvider = new PhysicalFileProvider(
         Path.Combine(app.Environment.ContentRootPath, "uploads")),
     RequestPath = "/uploads"
 });

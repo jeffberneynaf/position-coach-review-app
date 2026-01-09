@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import api from '@/lib/api';
+import api, { getServerBaseUrl } from '@/lib/api';
 import { CoachProfile } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
 import Navbar from '@/components/Navbar';
@@ -118,7 +118,7 @@ export default function CoachProfilePage() {
             <div className="flex-shrink-0">
               {coach.profilePhotoUrl ? (
                 <img 
-                  src={`http://localhost:5000${coach.profilePhotoUrl}`} 
+                  src={`${getServerBaseUrl()}${coach.profilePhotoUrl}`} 
                   alt={`${coach.firstName} ${coach.lastName}`}
                   className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-xl"
                 />
