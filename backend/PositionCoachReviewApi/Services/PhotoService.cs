@@ -104,7 +104,11 @@ public class PhotoService : IPhotoService
             await image.SaveAsync(photoPath, new JpegEncoder { Quality = 85 });
 
             // Create and save thumbnail
-            using var thumbnail = image.Clone(ctx => ctx.Resize(ThumbnailSize, ThumbnailSize));
+            using var thumbnail = image.Clone(ctx => ctx.Resize(new ResizeOptions
+            {
+                Size = new Size(ThumbnailSize, ThumbnailSize),
+                Mode = ResizeMode.Crop
+            }));
             await thumbnail.SaveAsync(thumbnailPath, new JpegEncoder { Quality = 80 });
 
             // Return relative URLs

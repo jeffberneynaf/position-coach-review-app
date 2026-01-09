@@ -19,14 +19,16 @@ public class AuthController : ControllerBase
     private readonly IZipCodeService _zipCodeService;
     private readonly IEmailService _emailService;
     private readonly IPhotoService _photoService;
+    private readonly ILogger<AuthController> _logger;
 
-    public AuthController(ApplicationDbContext context, IJwtService jwtService, IZipCodeService zipCodeService, IEmailService emailService, IPhotoService photoService)
+    public AuthController(ApplicationDbContext context, IJwtService jwtService, IZipCodeService zipCodeService, IEmailService emailService, IPhotoService photoService, ILogger<AuthController> logger)
     {
         _context = context;
         _jwtService = jwtService;
         _zipCodeService = zipCodeService;
         _emailService = emailService;
         _photoService = photoService;
+        _logger = logger;
     }
 
     private string GenerateVerificationToken()
@@ -381,7 +383,8 @@ public class AuthController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "Failed to upload photo", error = ex.Message });
+            _logger.LogError(ex, "Failed to upload photo for coach {CoachId}", coachId);
+            return StatusCode(500, new { message = "Failed to upload photo. Please try again." });
         }
     }
 }

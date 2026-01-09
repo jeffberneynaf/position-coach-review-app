@@ -283,7 +283,7 @@ export default function ConversationalCoachSignup({ onSuccess }: ConversationalC
           await uploadCoachPhoto(registeredCoachId, profilePhoto);
         } catch (photoError) {
           console.error('Photo upload failed:', photoError);
-          setPhotoUploadError('Failed to upload photo, but your account was created successfully.');
+          setPhotoUploadError('Failed to upload photo. Your account was created successfully. You can add a photo later from your profile settings.');
         }
       }
       
