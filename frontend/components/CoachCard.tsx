@@ -38,9 +38,19 @@ export default function CoachCard({ coach }: CoachCardProps) {
           </div>
         )}
 
-        {/* Avatar Placeholder */}
-        <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-[#274abb] to-[#1e3a8f] rounded-full flex items-center justify-center text-white text-2xl font-bold">
-          {coach.firstName.charAt(0)}{coach.lastName.charAt(0)}
+        {/* Avatar/Profile Photo */}
+        <div className="w-20 h-20 mx-auto mb-4 rounded-full overflow-hidden">
+          {coach.thumbnailUrl ? (
+            <img
+              src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '')}${coach.thumbnailUrl}`}
+              alt={`${coach.firstName} ${coach.lastName}`}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-[#274abb] to-[#1e3a8f] flex items-center justify-center text-white text-2xl font-bold">
+              {coach.firstName.charAt(0)}{coach.lastName.charAt(0)}
+            </div>
+          )}
         </div>
 
         {/* Coach Info */}

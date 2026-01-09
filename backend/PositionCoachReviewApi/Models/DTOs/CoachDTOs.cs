@@ -14,6 +14,8 @@ public class CoachProfileDto
     public string SubscriptionTierName { get; set; } = string.Empty;
     public double AverageRating { get; set; }
     public int ReviewCount { get; set; }
+    public string? PhotoUrl { get; set; }
+    public string? ThumbnailUrl { get; set; }
     public List<ReviewDto> Reviews { get; set; } = new List<ReviewDto>();
 }
 

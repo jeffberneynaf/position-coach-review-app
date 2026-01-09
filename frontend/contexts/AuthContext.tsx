@@ -9,7 +9,7 @@ interface AuthContextType {
   loading: boolean;
   login: (request: LoginRequest, userType: 'user' | 'coach') => Promise<void>;
   registerUser: (request: RegisterUserRequest) => Promise<void>;
-  registerCoach: (request: RegisterCoachRequest) => Promise<void>;
+  registerCoach: (request: RegisterCoachRequest) => Promise<{ coachId: number }>;
   logout: () => void;
 }
 
@@ -50,8 +50,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const registerCoach = async (request: RegisterCoachRequest) => {
-    await api.post('/api/auth/register/coach', request);
+    const response = await api.post<{ message: string; coachId: number }>('/api/auth/register/coach', request);
     // Email verification required - coach will need to verify email before logging in
+    return { coachId: response.data.coachId };
   };
 
   const logout = () => {

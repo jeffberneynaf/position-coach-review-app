@@ -34,6 +34,13 @@ public class Coach
     
     public int YearsOfExperience { get; set; }
     
+    // Photo fields
+    public string? PhotoUrl { get; set; }
+    
+    public string? ThumbnailUrl { get; set; }
+    
+    public DateTime? PhotoUploadedAt { get; set; }
+    
     // Subscription tier (Free, Basic, Premium)
     public int SubscriptionTierId { get; set; }
     public SubscriptionTier? SubscriptionTier { get; set; }

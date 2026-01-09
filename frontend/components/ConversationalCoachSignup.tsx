@@ -5,7 +5,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
 import Card from '@/components/Card';
-import { Mail, Lock, User as UserIcon, MapPin, Phone, Briefcase, FileText, CheckCircle2, ArrowRight, ArrowLeft } from 'lucide-react';
+import ImageUpload from '@/components/ImageUpload';
+import { uploadCoachPhoto } from '@/lib/api';
+import { Mail, Lock, User as UserIcon, MapPin, Phone, Briefcase, FileText, CheckCircle2, ArrowRight, ArrowLeft, Camera } from 'lucide-react';
 
 interface CoachFormData {
   // Basic fields (steps 1-5)
@@ -81,10 +83,13 @@ export default function ConversationalCoachSignup({ onSuccess }: ConversationalC
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
+  const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
+  const [photoUploadError, setPhotoUploadError] = useState('');
+  const [registeredCoachId, setRegisteredCoachId] = useState<number | null>(null);
   
   const { registerCoach } = useAuth();
 
-  const totalSteps = 9;
+  const totalSteps = 10; // Added photo upload step
 
   // Auto-save to localStorage
   useEffect(() => {
@@ -148,9 +153,29 @@ export default function ConversationalCoachSignup({ onSuccess }: ConversationalC
     }));
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     setDirection('forward');
-    if (validateStep()) {
+    if (!validateStep()) {
+      return;
+    }
+    
+    // Handle registration at step 9 before moving to photo upload step
+    if (step === 9) {
+      setError('');
+      setLoading(true);
+
+      try {
+        const { coachId } = await registerCoach(formData);
+        setRegisteredCoachId(coachId);
+        localStorage.removeItem('coachSignupDraft');
+        setStep(10); // Move to photo upload step
+      } catch (error: unknown) {
+        const err = error as { response?: { data?: { message?: string } } };
+        setError(err.response?.data?.message || 'Failed to register. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    } else {
       setStep(prev => Math.min(prev + 1, totalSteps));
     }
   };
@@ -247,21 +272,31 @@ export default function ConversationalCoachSignup({ onSuccess }: ConversationalC
   };
 
   const handleSubmit = async () => {
-    if (!validateStep()) return;
-    
-    setError('');
+    // This is only called on step 10 (photo upload - optional)
+    setPhotoUploadError('');
     setLoading(true);
 
     try {
-      await registerCoach(formData);
-      localStorage.removeItem('coachSignupDraft');
+      // Upload photo if one was selected
+      if (profilePhoto && registeredCoachId) {
+        try {
+          await uploadCoachPhoto(registeredCoachId, profilePhoto);
+        } catch (photoError) {
+          console.error('Photo upload failed:', photoError);
+          setPhotoUploadError('Failed to upload photo. Your account was created successfully. You can add a photo later from your profile settings.');
+        }
+      }
+      
+      // Success - account created (with or without photo)
       onSuccess(formData.email);
-    } catch (error: unknown) {
-      const err = error as { response?: { data?: { message?: string } } };
-      setError(err.response?.data?.message || 'Failed to register. Please try again.');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSkipPhoto = () => {
+    // Skip photo upload and complete registration
+    onSuccess(formData.email);
   };
 
   const getStepContent = () => {
@@ -885,6 +920,37 @@ export default function ConversationalCoachSignup({ onSuccess }: ConversationalC
           </div>
         );
 
+      case 10:
+        return (
+          <div className="space-y-6 py-4">
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900 mb-3">
+                <Camera className="inline-block mr-2 mb-1" size={32} />
+                Profile Photo (Optional)
+              </h2>
+              <p className="text-gray-600">
+                Add a professional photo to help athletes connect with you. You can always add or change this later.
+              </p>
+            </div>
+
+            <div className="space-y-5 pt-4">
+              <ImageUpload
+                onImageSelect={(file) => {
+                  setProfilePhoto(file);
+                  setPhotoUploadError('');
+                }}
+                error={photoUploadError}
+              />
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p className="text-sm text-blue-800">
+                  💡 <strong>Tip:</strong> A clear, professional photo helps build trust and can increase your visibility to potential clients.
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+
       default:
         return null;
     }
@@ -928,7 +994,7 @@ export default function ConversationalCoachSignup({ onSuccess }: ConversationalC
       </div>
 
       {/* Navigation Buttons */}
-      {step > 1 && (
+      {step > 1 && step < 10 && (
         <div className="flex gap-3 mt-8 pt-6 border-t border-gray-200">
           <Button
             variant="ghost"
@@ -941,7 +1007,7 @@ export default function ConversationalCoachSignup({ onSuccess }: ConversationalC
           
           <div className="flex-1" />
           
-          {step < totalSteps ? (
+          {step < 9 ? (
             <Button
               onClick={handleNext}
               icon={<ArrowRight size={20} />}
@@ -951,14 +1017,39 @@ export default function ConversationalCoachSignup({ onSuccess }: ConversationalC
             </Button>
           ) : (
             <Button
-              onClick={handleSubmit}
-              icon={<CheckCircle2 size={20} />}
+              onClick={handleNext}
+              icon={<ArrowRight size={20} />}
               size="lg"
               isLoading={loading}
             >
               Create My Account
             </Button>
           )}
+        </div>
+      )}
+
+      {/* Photo Upload Step Buttons */}
+      {step === 10 && (
+        <div className="flex gap-3 mt-8 pt-6 border-t border-gray-200">
+          <Button
+            variant="ghost"
+            onClick={handleSkipPhoto}
+            disabled={loading}
+          >
+            Skip for Now
+          </Button>
+          
+          <div className="flex-1" />
+          
+          <Button
+            onClick={handleSubmit}
+            icon={<CheckCircle2 size={20} />}
+            size="lg"
+            isLoading={loading}
+            disabled={!profilePhoto}
+          >
+            Complete Registration
+          </Button>
         </div>
       )}
 

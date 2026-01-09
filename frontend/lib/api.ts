@@ -34,6 +34,18 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Coach Photo Upload API
+export const uploadCoachPhoto = async (coachId: number, photo: File) => {
+  const formData = new FormData();
+  formData.append('photo', photo);
+
+  return api.post(`/auth/upload-coach-photo/${coachId}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+};
+
 // Matchmaking API endpoints
 export const matchmakingApi = {
   // Athlete Profile

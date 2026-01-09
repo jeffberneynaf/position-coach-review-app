@@ -18,13 +18,17 @@ public class AuthController : ControllerBase
     private readonly IJwtService _jwtService;
     private readonly IZipCodeService _zipCodeService;
     private readonly IEmailService _emailService;
+    private readonly IPhotoService _photoService;
+    private readonly ILogger<AuthController> _logger;
 
-    public AuthController(ApplicationDbContext context, IJwtService jwtService, IZipCodeService zipCodeService, IEmailService emailService)
+    public AuthController(ApplicationDbContext context, IJwtService jwtService, IZipCodeService zipCodeService, IEmailService emailService, IPhotoService photoService, ILogger<AuthController> logger)
     {
         _context = context;
         _jwtService = jwtService;
         _zipCodeService = zipCodeService;
         _emailService = emailService;
+        _photoService = photoService;
+        _logger = logger;
     }
 
     private string GenerateVerificationToken()
@@ -172,7 +176,7 @@ public class AuthController : ControllerBase
         // Send verification email
         await _emailService.SendVerificationEmailAsync(coach.Email, coach.FirstName, verificationToken, "Coach");
 
-        return Ok(new { message = "Registration successful! Please check your email to verify your account." });
+        return Ok(new { message = "Registration successful! Please check your email to verify your account.", coachId = coach.Id });
     }
 
     [HttpPost("login/user")]
@@ -339,5 +343,48 @@ public class AuthController : ControllerBase
         }
 
         return BadRequest(new { message = "Invalid user type" });
+    }
+
+    [HttpPost("upload-coach-photo/{coachId}")]
+    public async Task<ActionResult> UploadCoachPhoto(int coachId, IFormFile photo)
+    {
+        // Validate that coach exists
+        var coach = await _context.Coaches.FindAsync(coachId);
+        if (coach == null)
+        {
+            return NotFound(new { message = "Coach not found" });
+        }
+
+        // Validate photo
+        if (!await _photoService.ValidatePhotoAsync(photo))
+        {
+            return BadRequest(new { message = "Invalid photo. Must be JPEG, PNG, or WebP, max 5MB, minimum 200x200 pixels." });
+        }
+
+        try
+        {
+            // Delete old photo if exists
+            if (!string.IsNullOrEmpty(coach.PhotoUrl))
+            {
+                await _photoService.DeleteCoachPhotoAsync(coachId);
+            }
+
+            // Save new photo
+            var (photoUrl, thumbnailUrl) = await _photoService.SaveCoachPhotoAsync(photo, coachId);
+            
+            // Update coach record
+            coach.PhotoUrl = photoUrl;
+            coach.ThumbnailUrl = thumbnailUrl;
+            coach.PhotoUploadedAt = DateTime.UtcNow;
+            
+            await _context.SaveChangesAsync();
+
+            return Ok(new { photoUrl, thumbnailUrl, message = "Photo uploaded successfully" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to upload photo for coach {CoachId}", coachId);
+            return StatusCode(500, new { message = "Failed to upload photo. Please try again." });
+        }
     }
 }
