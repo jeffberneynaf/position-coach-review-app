@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { CoachProfile } from '@/types';
 import Card from './Card';
 import { Star, MapPin, Award, Briefcase } from 'lucide-react';
+import { getServerBaseUrl } from '@/lib/api';
 
 interface CoachCardProps {
   coach: CoachProfile;
@@ -38,10 +39,18 @@ export default function CoachCard({ coach }: CoachCardProps) {
           </div>
         )}
 
-        {/* Avatar Placeholder */}
-        <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-[#274abb] to-[#1e3a8f] rounded-full flex items-center justify-center text-white text-2xl font-bold">
-          {coach.firstName.charAt(0)}{coach.lastName.charAt(0)}
-        </div>
+        {/* Avatar or Photo */}
+        {coach.profilePhotoUrl ? (
+          <img 
+            src={`${getServerBaseUrl()}${coach.profilePhotoUrl}`} 
+            alt={`${coach.firstName} ${coach.lastName}`}
+            className="w-20 h-20 mx-auto mb-4 rounded-full object-cover border-2 border-gray-200"
+          />
+        ) : (
+          <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-[#274abb] to-[#1e3a8f] rounded-full flex items-center justify-center text-white text-2xl font-bold">
+            {coach.firstName.charAt(0)}{coach.lastName.charAt(0)}
+          </div>
+        )}
 
         {/* Coach Info */}
         <div className="text-center mb-4">

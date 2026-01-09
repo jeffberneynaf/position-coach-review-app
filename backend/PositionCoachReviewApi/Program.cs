@@ -1,6 +1,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using PositionCoachReviewApi.Data;
 using PositionCoachReviewApi.Services;
@@ -49,6 +50,7 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IZipCodeService, ZipCodeService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IMatchingAlgorithmService, MatchingAlgorithmService>();
+builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 
 // Configure CORS
 builder.Services.AddCors(options =>
@@ -74,6 +76,14 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseCors("AllowFrontend");
+
+// Serve static files from uploads directory
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(app.Environment.ContentRootPath, "uploads")),
+    RequestPath = "/uploads"
+});
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -15,11 +15,13 @@ public class CoachesController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
     private readonly IZipCodeService _zipCodeService;
+    private readonly IFileStorageService _fileStorageService;
 
-    public CoachesController(ApplicationDbContext context, IZipCodeService zipCodeService)
+    public CoachesController(ApplicationDbContext context, IZipCodeService zipCodeService, IFileStorageService fileStorageService)
     {
         _context = context;
         _zipCodeService = zipCodeService;
+        _fileStorageService = fileStorageService;
     }
 
     [HttpGet]
@@ -40,6 +42,7 @@ public class CoachesController : ControllerBase
                 ZipCode = c.ZipCode,
                 PhoneNumber = c.PhoneNumber,
                 YearsOfExperience = c.YearsOfExperience,
+                ProfilePhotoUrl = c.ProfilePhotoUrl,
                 SubscriptionTierName = c.SubscriptionTier != null ? c.SubscriptionTier.Name : "Free",
                 AverageRating = c.Reviews.Any() ? c.Reviews.Average(r => r.Rating) : 0,
                 ReviewCount = c.Reviews.Count,
@@ -82,6 +85,7 @@ public class CoachesController : ControllerBase
             ZipCode = coach.ZipCode,
             PhoneNumber = coach.PhoneNumber,
             YearsOfExperience = coach.YearsOfExperience,
+            ProfilePhotoUrl = coach.ProfilePhotoUrl,
             SubscriptionTierName = coach.SubscriptionTier?.Name ?? "Free",
             AverageRating = coach.Reviews.Any() ? coach.Reviews.Average(r => r.Rating) : 0,
             ReviewCount = coach.Reviews.Count,
@@ -133,6 +137,7 @@ public class CoachesController : ControllerBase
                     ZipCode = c.ZipCode,
                     PhoneNumber = c.PhoneNumber,
                     YearsOfExperience = c.YearsOfExperience,
+                    ProfilePhotoUrl = c.ProfilePhotoUrl,
                     SubscriptionTierName = c.SubscriptionTier != null ? c.SubscriptionTier.Name : "Free",
                     AverageRating = c.Reviews.Any() ? c.Reviews.Average(r => r.Rating) : 0,
                     ReviewCount = c.Reviews.Count,
@@ -182,6 +187,7 @@ public class CoachesController : ControllerBase
                 ZipCode = x.Coach.ZipCode,
                 PhoneNumber = x.Coach.PhoneNumber,
                 YearsOfExperience = x.Coach.YearsOfExperience,
+                ProfilePhotoUrl = x.Coach.ProfilePhotoUrl,
                 SubscriptionTierName = x.Coach.SubscriptionTier != null ? x.Coach.SubscriptionTier.Name : "Free",
                 AverageRating = x.Coach.Reviews.Any() ? x.Coach.Reviews.Average(r => r.Rating) : 0,
                 ReviewCount = x.Coach.Reviews.Count,
@@ -236,5 +242,66 @@ public class CoachesController : ControllerBase
         await _context.SaveChangesAsync();
 
         return NoContent();
+    }
+
+    [Authorize(Roles = "Coach")]
+    [HttpPost("{id}/photo")]
+    public async Task<IActionResult> UploadProfilePhoto(int id, IFormFile photo)
+    {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+        
+        if (userId != id)
+        {
+            return Forbid();
+        }
+
+        var coach = await _context.Coaches.FindAsync(id);
+        
+        if (coach == null)
+        {
+            return NotFound();
+        }
+
+        // Validate file
+        if (photo == null || photo.Length == 0)
+        {
+            return BadRequest(new { message = "No file uploaded" });
+        }
+
+        if (!_fileStorageService.IsValidImageFile(photo))
+        {
+            return BadRequest(new { message = "Invalid file type. Only image files (jpg, jpeg, png, gif, webp) are allowed" });
+        }
+
+        if (!_fileStorageService.IsValidFileSize(photo, 2 * 1024 * 1024)) // 2MB
+        {
+            return BadRequest(new { message = "File size must be less than 2MB" });
+        }
+
+        try
+        {
+            // Delete old photo if exists
+            if (!string.IsNullOrEmpty(coach.ProfilePhotoUrl))
+            {
+                _fileStorageService.DeleteProfilePhoto(coach.ProfilePhotoUrl);
+            }
+
+            // Save new photo
+            var photoUrl = await _fileStorageService.SaveProfilePhotoAsync(photo, id);
+            coach.ProfilePhotoUrl = photoUrl;
+            coach.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { photoUrl });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { message = "Failed to upload photo" });
+        }
     }
 }

@@ -8,6 +8,10 @@
 *.db-shm
 *.db-wal
 
+# Uploaded files
+**/uploads/profile-photos/*
+!**/uploads/profile-photos/.gitkeep
+
 # User-specific files
 *.rsuser
 *.suo

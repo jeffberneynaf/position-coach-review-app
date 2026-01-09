@@ -9,7 +9,7 @@ interface AuthContextType {
   loading: boolean;
   login: (request: LoginRequest, userType: 'user' | 'coach') => Promise<void>;
   registerUser: (request: RegisterUserRequest) => Promise<void>;
-  registerCoach: (request: RegisterCoachRequest) => Promise<void>;
+  registerCoach: (request: RegisterCoachRequest & { profilePhoto?: File | null }) => Promise<void>;
   logout: () => void;
 }
 
@@ -49,8 +49,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Email verification required - user will need to verify email before logging in
   };
 
-  const registerCoach = async (request: RegisterCoachRequest) => {
-    await api.post('/api/auth/register/coach', request);
+  const registerCoach = async (request: RegisterCoachRequest & { profilePhoto?: File | null }) => {
+    const formData = new FormData();
+    
+    // Add all request fields to FormData
+    Object.entries(request).forEach(([key, value]) => {
+      if (key === 'profilePhoto') {
+        // Handle file separately
+        if (value instanceof File) {
+          formData.append('photo', value);
+        }
+      } else if (Array.isArray(value)) {
+        // Handle arrays
+        value.forEach((item) => {
+          formData.append(key, item.toString());
+        });
+      } else if (value !== undefined && value !== null) {
+        formData.append(key, value.toString());
+      }
+    });
+
+    await api.post('/api/auth/register/coach', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     // Email verification required - coach will need to verify email before logging in
   };
 
