@@ -18,13 +18,15 @@ public class AuthController : ControllerBase
     private readonly IJwtService _jwtService;
     private readonly IZipCodeService _zipCodeService;
     private readonly IEmailService _emailService;
+    private readonly IFileStorageService _fileStorageService;
 
-    public AuthController(ApplicationDbContext context, IJwtService jwtService, IZipCodeService zipCodeService, IEmailService emailService)
+    public AuthController(ApplicationDbContext context, IJwtService jwtService, IZipCodeService zipCodeService, IEmailService emailService, IFileStorageService fileStorageService)
     {
         _context = context;
         _jwtService = jwtService;
         _zipCodeService = zipCodeService;
         _emailService = emailService;
+        _fileStorageService = fileStorageService;
     }
 
     private string GenerateVerificationToken()
@@ -103,7 +105,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register/coach")]
-    public async Task<ActionResult> RegisterCoach([FromBody] RegisterCoachRequest request)
+    public async Task<ActionResult> RegisterCoach([FromForm] RegisterCoachRequest request, IFormFile? photo)
     {
         if (await _context.Coaches.AnyAsync(c => c.Email == request.Email))
         {
@@ -136,6 +138,33 @@ public class AuthController : ControllerBase
 
         _context.Coaches.Add(coach);
         await _context.SaveChangesAsync();
+
+        // Handle photo upload if provided
+        if (photo != null && photo.Length > 0)
+        {
+            // Validate file
+            if (!_fileStorageService.IsValidImageFile(photo))
+            {
+                return BadRequest(new { message = "Invalid file type. Only image files (jpg, jpeg, png, gif, webp) are allowed" });
+            }
+
+            if (!_fileStorageService.IsValidFileSize(photo, 2 * 1024 * 1024)) // 2MB
+            {
+                return BadRequest(new { message = "File size must be less than 2MB" });
+            }
+
+            try
+            {
+                var photoUrl = await _fileStorageService.SaveProfilePhotoAsync(photo, coach.Id);
+                coach.ProfilePhotoUrl = photoUrl;
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                // Log error but don't fail registration
+                // Photo upload is optional
+            }
+        }
 
         // Create CoachMatchProfile if matchmaking data is provided
         if (!string.IsNullOrEmpty(request.CoachingStyle))
