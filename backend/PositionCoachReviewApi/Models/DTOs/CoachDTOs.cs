@@ -11,6 +11,7 @@ public class CoachProfileDto
     public string ZipCode { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;
     public int YearsOfExperience { get; set; }
+    public string? ProfilePhotoUrl { get; set; }
     public string SubscriptionTierName { get; set; } = string.Empty;
     public double AverageRating { get; set; }
     public int ReviewCount { get; set; }

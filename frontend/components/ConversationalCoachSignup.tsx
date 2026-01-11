@@ -18,6 +18,7 @@ interface CoachFormData {
   specialization: string;
   phoneNumber: string;
   yearsOfExperience: number;
+  profilePhoto?: File | null;
   
   // Matchmaking fields (steps 6-9)
   coachingStyle: string;
@@ -57,6 +58,7 @@ export default function ConversationalCoachSignup({ onSuccess }: ConversationalC
     specialization: '',
     phoneNumber: '',
     yearsOfExperience: 0,
+    profilePhoto: null,
     // Matchmaking fields
     coachingStyle: '',
     communicationStyle: '',
@@ -81,6 +83,8 @@ export default function ConversationalCoachSignup({ onSuccess }: ConversationalC
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photoError, setPhotoError] = useState('');
   
   const { registerCoach } = useAuth();
 
@@ -146,6 +150,48 @@ export default function ConversationalCoachSignup({ onSuccess }: ConversationalC
       ...prev,
       [name]: (prev[name] as string[]).filter((_, i) => i !== index)
     }));
+  };
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    setPhotoError('');
+    
+    if (!file) {
+      setFormData(prev => ({ ...prev, profilePhoto: null }));
+      setPhotoPreview(null);
+      return;
+    }
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      setPhotoError('Please select a valid image file (jpg, jpeg, png, gif, webp)');
+      e.target.value = '';
+      return;
+    }
+
+    // Validate file size (2MB)
+    const maxSize = 2 * 1024 * 1024;
+    if (file.size > maxSize) {
+      setPhotoError('File size must be less than 2MB');
+      e.target.value = '';
+      return;
+    }
+
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPhotoPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    setFormData(prev => ({ ...prev, profilePhoto: file }));
+  };
+
+  const handleRemovePhoto = () => {
+    setFormData(prev => ({ ...prev, profilePhoto: null }));
+    setPhotoPreview(null);
+    setPhotoError('');
   };
 
   const handleNext = () => {
@@ -475,6 +521,65 @@ export default function ConversationalCoachSignup({ onSuccess }: ConversationalC
                 <p className="mt-1 text-sm text-gray-500">
                   A good bio helps you stand out and build trust with athletes
                 </p>
+              </div>
+
+              {/* Photo Upload Section */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Profile Photo (Optional)
+                </label>
+                
+                {photoPreview ? (
+                  <div className="flex items-start gap-4">
+                    <div className="relative">
+                      <img 
+                        src={photoPreview} 
+                        alt="Profile preview" 
+                        className="w-32 h-32 object-cover rounded-full border-2 border-gray-200"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm text-gray-600 mb-2">
+                        {formData.profilePhoto?.name}
+                      </p>
+                      <p className="text-xs text-gray-500 mb-3">
+                        {((formData.profilePhoto?.size || 0) / 1024).toFixed(1)} KB
+                      </p>
+                      <button
+                        type="button"
+                        onClick={handleRemovePhoto}
+                        className="text-sm text-red-600 hover:text-red-700 font-medium"
+                      >
+                        Remove Photo
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#f91942] transition-colors">
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                      onChange={handlePhotoChange}
+                      className="hidden"
+                      id="photo-upload"
+                    />
+                    <label htmlFor="photo-upload" className="cursor-pointer">
+                      <div className="w-16 h-16 mx-auto mb-3 bg-gray-100 rounded-full flex items-center justify-center">
+                        <UserIcon size={32} className="text-gray-400" />
+                      </div>
+                      <p className="text-sm text-gray-600 mb-1">
+                        <span className="text-[#f91942] font-medium">Click to upload</span> or drag and drop
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        JPG, PNG, GIF or WEBP (max 2MB)
+                      </p>
+                    </label>
+                  </div>
+                )}
+
+                {photoError && (
+                  <p className="mt-2 text-sm text-red-600">{photoError}</p>
+                )}
               </div>
 
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">

@@ -85,6 +85,7 @@ export interface CoachProfile {
   zipCode: string;
   phoneNumber: string;
   yearsOfExperience: number;
+  profilePhotoUrl?: string;
   subscriptionTierName: string;
   averageRating: number;
   reviewCount: number;
