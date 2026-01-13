@@ -11,6 +11,7 @@ interface AthleteFormData {
   // Basic fields (steps 2-3)
   email: string;
   password: string;
+  confirmPassword: string;
   firstName: string;
   lastName: string;
   
@@ -53,6 +54,7 @@ export default function ConversationalAthleteSignup({ onSuccess }: Conversationa
   const [formData, setFormData] = useState<AthleteFormData>({
     email: '',
     password: '',
+    confirmPassword: '',
     firstName: '',
     lastName: '',
     athleteName: '',
@@ -176,8 +178,17 @@ export default function ConversationalAthleteSignup({ onSuccess }: Conversationa
           setError('Please enter a valid email address');
           return false;
         }
-        if (formData.password.length < 6) {
-          setError('Password should be at least 6 characters for security');
+        if (formData.password.length < 8) {
+          setError('Password must be at least 8 characters long');
+          return false;
+        }
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
+        if (!passwordRegex.test(formData.password)) {
+          setError('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&#)');
+          return false;
+        }
+        if (formData.password !== formData.confirmPassword) {
+          setError('Passwords do not match');
           return false;
         }
         break;
@@ -375,9 +386,22 @@ export default function ConversationalAthleteSignup({ onSuccess }: Conversationa
                 onChange={handleChange}
                 onKeyPress={handleKeyPress}
                 icon={<Lock size={18} />}
-                helperText="At least 6 characters"
+                helperText="At least 8 characters, one uppercase, one lowercase, one number, and one special character"
                 required
-                minLength={6}
+                minLength={8}
+              />
+
+              <Input
+                label="Confirm Password"
+                name="confirmPassword"
+                type="password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                onKeyPress={handleKeyPress}
+                icon={<Lock size={18} />}
+                helperText="Re-enter your password"
+                required
+                minLength={8}
               />
             </div>
           </div>

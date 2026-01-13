@@ -19,8 +19,14 @@ public class RegisterUserRequest
     public string Email { get; set; } = string.Empty;
     
     [Required]
-    [MinLength(6)]
+    [MinLength(8, ErrorMessage = "Password must be at least 8 characters long")]
+    [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$", 
+        ErrorMessage = "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&#)")]
     public string Password { get; set; } = string.Empty;
+    
+    [Required]
+    [Compare("Password", ErrorMessage = "Passwords do not match")]
+    public string ConfirmPassword { get; set; } = string.Empty;
     
     [Required]
     public string FirstName { get; set; } = string.Empty;
@@ -58,8 +64,14 @@ public class RegisterCoachRequest
     public string Email { get; set; } = string.Empty;
     
     [Required]
-    [MinLength(6)]
+    [MinLength(8, ErrorMessage = "Password must be at least 8 characters long")]
+    [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$", 
+        ErrorMessage = "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&#)")]
     public string Password { get; set; } = string.Empty;
+    
+    [Required]
+    [Compare("Password", ErrorMessage = "Passwords do not match")]
+    public string ConfirmPassword { get; set; } = string.Empty;
     
     [Required]
     public string FirstName { get; set; } = string.Empty;
