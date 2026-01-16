@@ -191,10 +191,7 @@ public class MatchmakingController : ControllerBase
             AcceptsOneOnOne = request.AcceptsOneOnOne,
             AvailableDaysJson = JsonSerializer.Serialize(request.AvailableDays),
             AvailableTimeSlotsJson = JsonSerializer.Serialize(request.AvailableTimeSlots),
-            MaxNewClientsPerMonth = request.MaxNewClientsPerMonth,
-            SessionPriceMin = request.SessionPriceMin,
-            SessionPriceMax = request.SessionPriceMax,
-            TravelRadiusMiles = request.TravelRadiusMiles,
+            SessionPrice = request.SessionPrice,
             OffersVirtualSessions = request.OffersVirtualSessions,
             OffersInPersonSessions = request.OffersInPersonSessions,
             SuccessStoriesJson = JsonSerializer.Serialize(request.SuccessStories),
@@ -276,10 +273,7 @@ public class MatchmakingController : ControllerBase
         coachProfile.AcceptsOneOnOne = request.AcceptsOneOnOne;
         coachProfile.AvailableDaysJson = JsonSerializer.Serialize(request.AvailableDays);
         coachProfile.AvailableTimeSlotsJson = JsonSerializer.Serialize(request.AvailableTimeSlots);
-        coachProfile.MaxNewClientsPerMonth = request.MaxNewClientsPerMonth;
-        coachProfile.SessionPriceMin = request.SessionPriceMin;
-        coachProfile.SessionPriceMax = request.SessionPriceMax;
-        coachProfile.TravelRadiusMiles = request.TravelRadiusMiles;
+        coachProfile.SessionPrice = request.SessionPrice;
         coachProfile.OffersVirtualSessions = request.OffersVirtualSessions;
         coachProfile.OffersInPersonSessions = request.OffersInPersonSessions;
         coachProfile.SuccessStoriesJson = JsonSerializer.Serialize(request.SuccessStories);
@@ -338,7 +332,7 @@ public class MatchmakingController : ControllerBase
 
         if (request.MaxPrice.HasValue)
         {
-            query = query.Where(cmp => cmp.SessionPriceMin <= request.MaxPrice.Value);
+            query = query.Where(cmp => cmp.SessionPrice <= request.MaxPrice.Value);
         }
 
         if (request.OffersVirtual.HasValue && request.OffersVirtual.Value)
@@ -874,10 +868,7 @@ public class MatchmakingController : ControllerBase
             AcceptsOneOnOne = profile.AcceptsOneOnOne,
             AvailableDays = availableDays,
             AvailableTimeSlots = availableTimeSlots,
-            MaxNewClientsPerMonth = profile.MaxNewClientsPerMonth,
-            SessionPriceMin = profile.SessionPriceMin,
-            SessionPriceMax = profile.SessionPriceMax,
-            TravelRadiusMiles = profile.TravelRadiusMiles,
+            SessionPrice = profile.SessionPrice,
             OffersVirtualSessions = profile.OffersVirtualSessions,
             OffersInPersonSessions = profile.OffersInPersonSessions,
             SuccessStories = successStories,

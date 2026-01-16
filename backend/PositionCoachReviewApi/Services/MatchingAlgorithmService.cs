@@ -91,18 +91,8 @@ public class MatchingAlgorithmService : IMatchingAlgorithmService
         // Check if within athlete's max travel distance
         if (distance <= athleteProfile.MaxTravelDistanceMiles)
         {
-            // Perfect score if within range
-            if (distance <= coachProfile.TravelRadiusMiles)
-            {
-                reasons.Add($"Coach is only {distance:F1} miles away - within your preferred range");
-                return maxPoints;
-            }
-            // Reduced score if athlete willing but coach needs to travel more
-            else
-            {
-                reasons.Add($"Located {distance:F1} miles away");
-                return maxPoints * 0.7;
-            }
+            reasons.Add($"Coach is only {distance:F1} miles away - within your preferred range");
+            return maxPoints;
         }
         // If coach offers virtual and athlete is willing
         else if (coachProfile.OffersVirtualSessions)
@@ -294,23 +284,15 @@ public class MatchingAlgorithmService : IMatchingAlgorithmService
     {
         const double maxPoints = 10.0;
 
-        // If athlete's budget is within coach's range
-        if (athleteProfile.MaxBudgetPerSession >= coachProfile.SessionPriceMin &&
-            athleteProfile.MaxBudgetPerSession <= coachProfile.SessionPriceMax)
+        // If athlete's budget is at or above the coach's price
+        if (athleteProfile.MaxBudgetPerSession >= coachProfile.SessionPrice)
         {
-            reasons.Add($"Sessions ${coachProfile.SessionPriceMin}-${coachProfile.SessionPriceMax} fit your budget");
+            reasons.Add($"Sessions at ${coachProfile.SessionPrice} fit your budget");
             return maxPoints;
         }
 
-        // If athlete's budget is above coach's max (even better)
-        if (athleteProfile.MaxBudgetPerSession > coachProfile.SessionPriceMax)
-        {
-            reasons.Add($"Affordable sessions at ${coachProfile.SessionPriceMin}-${coachProfile.SessionPriceMax}");
-            return maxPoints;
-        }
-
-        // If athlete's budget is below but close
-        if (athleteProfile.MaxBudgetPerSession >= coachProfile.SessionPriceMin * 0.8m)
+        // If athlete's budget is close (within 80%)
+        if (athleteProfile.MaxBudgetPerSession >= coachProfile.SessionPrice * 0.8m)
         {
             return maxPoints * 0.6;
         }

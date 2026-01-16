@@ -65,10 +65,7 @@ export interface RegisterCoachRequest extends RegisterUserRequest {
   acceptsOneOnOne?: boolean;
   availableDays?: string[];
   availableTimeSlots?: string[];
-  maxNewClientsPerMonth?: number;
-  sessionPriceMin?: number;
-  sessionPriceMax?: number;
-  travelRadiusMiles?: number;
+  sessionPrice?: number;
   offersVirtualSessions?: boolean;
   offersInPersonSessions?: boolean;
   certifications?: string[];
@@ -138,11 +135,19 @@ export interface DashboardStats {
 }
 
 export interface UpdateCoachProfileRequest {
+  firstName: string;
+  lastName: string;
   bio: string;
   specialization: string;
   zipCode: string;
   phoneNumber: string;
   yearsOfExperience: number;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
 }
 
 export interface UpgradeSubscriptionRequest {

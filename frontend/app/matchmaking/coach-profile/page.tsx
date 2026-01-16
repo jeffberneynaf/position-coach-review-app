@@ -25,10 +25,7 @@ export default function CoachProfilePage() {
     acceptsOneOnOne: true,
     availableDays: [],
     availableTimeSlots: [],
-    maxNewClientsPerMonth: 5,
-    sessionPriceMin: 50,
-    sessionPriceMax: 150,
-    travelRadiusMiles: 25,
+    sessionPrice: 75,
     offersVirtualSessions: false,
     offersInPersonSessions: true,
     successStories: [],
@@ -60,10 +57,7 @@ export default function CoachProfilePage() {
             acceptsOneOnOne: response.data.acceptsOneOnOne,
             availableDays: response.data.availableDays,
             availableTimeSlots: response.data.availableTimeSlots,
-            maxNewClientsPerMonth: response.data.maxNewClientsPerMonth,
-            sessionPriceMin: response.data.sessionPriceMin,
-            sessionPriceMax: response.data.sessionPriceMax,
-            travelRadiusMiles: response.data.travelRadiusMiles,
+            sessionPrice: response.data.sessionPrice,
             offersVirtualSessions: response.data.offersVirtualSessions,
             offersInPersonSessions: response.data.offersInPersonSessions,
             successStories: response.data.successStories,
@@ -312,55 +306,15 @@ export default function CoachProfilePage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Session Price Range ($)
-              </label>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm text-gray-600">Min Price</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={formData.sessionPriceMin}
-                    onChange={(e) => setFormData({ ...formData, sessionPriceMin: parseFloat(e.target.value) })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm text-gray-600">Max Price</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={formData.sessionPriceMax}
-                    onChange={(e) => setFormData({ ...formData, sessionPriceMax: parseFloat(e.target.value) })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Max New Clients Per Month
-              </label>
-              <input
-                type="number"
-                min="1"
-                value={formData.maxNewClientsPerMonth}
-                onChange={(e) => setFormData({ ...formData, maxNewClientsPerMonth: parseInt(e.target.value) })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Travel Radius (miles)
+                Session Price ($)
               </label>
               <input
                 type="number"
                 min="0"
-                value={formData.travelRadiusMiles}
-                onChange={(e) => setFormData({ ...formData, travelRadiusMiles: parseInt(e.target.value) })}
+                value={formData.sessionPrice}
+                onChange={(e) => setFormData({ ...formData, sessionPrice: parseFloat(e.target.value) })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="75"
               />
             </div>
           </div>

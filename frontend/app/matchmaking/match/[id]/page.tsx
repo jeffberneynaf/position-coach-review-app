@@ -252,7 +252,7 @@ export default function MatchDetailPage() {
                 <div>
                   <p className="text-sm text-gray-600">Session Price</p>
                   <p className="font-medium text-gray-900">
-                    ${coach.sessionPriceMin} - ${coach.sessionPriceMax}
+                    ${coach.sessionPrice}
                   </p>
                 </div>
                 <div>

@@ -223,6 +223,8 @@ public class CoachesController : ControllerBase
             return NotFound();
         }
 
+        coach.FirstName = request.FirstName;
+        coach.LastName = request.LastName;
         coach.Bio = request.Bio;
         coach.Specialization = request.Specialization;
         coach.PhoneNumber = request.PhoneNumber;
@@ -303,5 +305,38 @@ public class CoachesController : ControllerBase
         {
             return StatusCode(500, new { message = "Failed to upload photo" });
         }
+    }
+
+    [Authorize(Roles = "Coach")]
+    [HttpPost("{id}/change-password")]
+    public async Task<IActionResult> ChangePassword(int id, [FromBody] ChangePasswordRequest request)
+    {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+        
+        if (userId != id)
+        {
+            return Forbid();
+        }
+
+        var coach = await _context.Coaches.FindAsync(id);
+        
+        if (coach == null)
+        {
+            return NotFound();
+        }
+
+        // Verify current password
+        if (!BCrypt.Net.BCrypt.Verify(request.CurrentPassword, coach.PasswordHash))
+        {
+            return BadRequest(new { message = "Current password is incorrect" });
+        }
+
+        // Update password
+        coach.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+        coach.UpdatedAt = DateTime.UtcNow;
+
+        await _context.SaveChangesAsync();
+
+        return Ok(new { message = "Password changed successfully" });
     }
 }

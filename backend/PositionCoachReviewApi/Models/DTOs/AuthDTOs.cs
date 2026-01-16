@@ -101,10 +101,7 @@ public class RegisterCoachRequest
     public bool AcceptsOneOnOne { get; set; } = true;
     public List<string>? AvailableDays { get; set; }
     public List<string>? AvailableTimeSlots { get; set; }
-    public int MaxNewClientsPerMonth { get; set; } = 5;
-    public decimal SessionPriceMin { get; set; }
-    public decimal SessionPriceMax { get; set; }
-    public int TravelRadiusMiles { get; set; } = 25;
+    public decimal SessionPrice { get; set; }
     public bool OffersVirtualSessions { get; set; }
     public bool OffersInPersonSessions { get; set; } = true;
     public List<string>? Certifications { get; set; }
@@ -120,4 +117,20 @@ public class AuthResponse
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public string UserType { get; set; } = string.Empty; // "User" or "Coach"
+}
+
+public class ChangePasswordRequest
+{
+    [Required]
+    public string CurrentPassword { get; set; } = string.Empty;
+    
+    [Required]
+    [MinLength(8, ErrorMessage = "Password must be at least 8 characters long")]
+    [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$", 
+        ErrorMessage = "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&#)")]
+    public string NewPassword { get; set; } = string.Empty;
+    
+    [Required]
+    [Compare("NewPassword", ErrorMessage = "Passwords do not match")]
+    public string ConfirmNewPassword { get; set; } = string.Empty;
 }

@@ -32,10 +32,7 @@ interface CoachFormData {
   acceptsOneOnOne: boolean;
   availableDays: string[];
   availableTimeSlots: string[];
-  maxNewClientsPerMonth: number;
-  sessionPriceMin: number;
-  sessionPriceMax: number;
-  travelRadiusMiles: number;
+  sessionPrice: number;
   offersVirtualSessions: boolean;
   offersInPersonSessions: boolean;
   certifications: string[];
@@ -72,10 +69,7 @@ export default function ConversationalCoachSignup({ onSuccess }: ConversationalC
     acceptsOneOnOne: true,
     availableDays: [],
     availableTimeSlots: [],
-    maxNewClientsPerMonth: 5,
-    sessionPriceMin: 0,
-    sessionPriceMax: 0,
-    travelRadiusMiles: 25,
+    sessionPrice: 0,
     offersVirtualSessions: false,
     offersInPersonSessions: true,
     certifications: [],
@@ -112,9 +106,9 @@ export default function ConversationalCoachSignup({ onSuccess }: ConversationalC
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'yearsOfExperience' || name === 'maxNewClientsPerMonth' || 
-              name === 'sessionPriceMin' || name === 'sessionPriceMax' || 
-              name === 'travelRadiusMiles' || name === 'minAgeAccepted' || name === 'maxAgeAccepted'
+      [name]: name === 'yearsOfExperience' || 
+              name === 'sessionPrice' || 
+              name === 'minAgeAccepted' || name === 'maxAgeAccepted'
               ? (value === '' ? 0 : parseFloat(value) || 0) 
               : value
     }));
@@ -279,12 +273,8 @@ export default function ConversationalCoachSignup({ onSuccess }: ConversationalC
           setError('Please select at least one available day');
           return false;
         }
-        if (formData.sessionPriceMin < 0 || formData.sessionPriceMax < 0) {
-          setError('Session prices cannot be negative');
-          return false;
-        }
-        if (formData.sessionPriceMax > 0 && formData.sessionPriceMin > formData.sessionPriceMax) {
-          setError('Minimum price cannot be greater than maximum price');
+        if (formData.sessionPrice < 0) {
+          setError('Session price cannot be negative');
           return false;
         }
         break;
@@ -731,46 +721,14 @@ export default function ConversationalCoachSignup({ onSuccess }: ConversationalC
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="Session Price Min ($)"
-                  name="sessionPriceMin"
-                  type="number"
-                  value={formData.sessionPriceMin.toString()}
-                  onChange={handleChange}
-                  min="0"
-                  placeholder="50"
-                />
-                <Input
-                  label="Session Price Max ($)"
-                  name="sessionPriceMax"
-                  type="number"
-                  value={formData.sessionPriceMax.toString()}
-                  onChange={handleChange}
-                  min="0"
-                  placeholder="150"
-                />
-              </div>
-
               <Input
-                label="Max New Clients Per Month"
-                name="maxNewClientsPerMonth"
+                label="Session Price ($)"
+                name="sessionPrice"
                 type="number"
-                value={formData.maxNewClientsPerMonth.toString()}
+                value={formData.sessionPrice.toString()}
                 onChange={handleChange}
                 min="0"
-                placeholder="5"
-              />
-
-              <Input
-                label="Travel Radius (miles)"
-                name="travelRadiusMiles"
-                type="number"
-                value={formData.travelRadiusMiles.toString()}
-                onChange={handleChange}
-                min="0"
-                placeholder="25"
-                helperText="How far are you willing to travel for sessions?"
+                placeholder="75"
               />
 
               <div className="space-y-3">

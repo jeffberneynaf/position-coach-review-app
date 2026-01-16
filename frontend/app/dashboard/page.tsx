@@ -97,8 +97,19 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="gradient-secondary text-white pt-32 pb-12 px-4">
         <div className="container mx-auto max-w-6xl">
-          <h1 className="text-4xl font-bold mb-2">Coach Dashboard</h1>
-          <p className="text-white/90">Welcome back, {user?.firstName}!</p>
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-4xl font-bold mb-2">Coach Dashboard</h1>
+              <p className="text-white/90">Welcome back, {user?.firstName}!</p>
+            </div>
+            <Button
+              variant="secondary"
+              onClick={() => router.push('/dashboard/profile')}
+              icon={<UserIcon size={18} />}
+            >
+              Edit Profile
+            </Button>
+          </div>
         </div>
       </div>
 

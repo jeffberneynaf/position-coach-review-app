@@ -20,10 +20,7 @@ public class CoachMatchProfile
     public bool AcceptsOneOnOne { get; set; }
     public string AvailableDaysJson { get; set; } = string.Empty;
     public string AvailableTimeSlotsJson { get; set; } = string.Empty;
-    public int MaxNewClientsPerMonth { get; set; }
-    public decimal SessionPriceMin { get; set; }
-    public decimal SessionPriceMax { get; set; }
-    public int TravelRadiusMiles { get; set; }
+    public decimal SessionPrice { get; set; }
     public bool OffersVirtualSessions { get; set; }
     public bool OffersInPersonSessions { get; set; }
     public string SuccessStoriesJson { get; set; } = string.Empty;

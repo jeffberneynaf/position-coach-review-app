@@ -168,7 +168,7 @@ export default function DiscoverPage() {
             <div className="grid grid-cols-2 gap-3 py-4 border-t border-gray-200">
               <div className="text-center">
                 <p className="text-2xl font-bold text-gray-900">
-                  ${coach.sessionPriceMin}-${coach.sessionPriceMax}
+                  ${coach.sessionPrice}
                 </p>
                 <p className="text-xs text-gray-600">Per Session</p>
               </div>

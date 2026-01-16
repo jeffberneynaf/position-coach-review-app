@@ -94,10 +94,7 @@ export interface CreateCoachMatchProfileRequest {
   acceptsOneOnOne: boolean;
   availableDays: string[];
   availableTimeSlots: string[];
-  maxNewClientsPerMonth: number;
-  sessionPriceMin: number;
-  sessionPriceMax: number;
-  travelRadiusMiles: number;
+  sessionPrice: number;
   offersVirtualSessions: boolean;
   offersInPersonSessions: boolean;
   successStories: string[];

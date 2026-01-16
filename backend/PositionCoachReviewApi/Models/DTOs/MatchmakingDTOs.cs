@@ -115,10 +115,7 @@ public class CoachMatchProfileDto
     public bool AcceptsOneOnOne { get; set; }
     public List<string> AvailableDays { get; set; } = new();
     public List<string> AvailableTimeSlots { get; set; } = new();
-    public int MaxNewClientsPerMonth { get; set; }
-    public decimal SessionPriceMin { get; set; }
-    public decimal SessionPriceMax { get; set; }
-    public int TravelRadiusMiles { get; set; }
+    public decimal SessionPrice { get; set; }
     public bool OffersVirtualSessions { get; set; }
     public bool OffersInPersonSessions { get; set; }
     public List<string> SuccessStories { get; set; } = new();
@@ -143,10 +140,7 @@ public class CreateCoachMatchProfileRequest
     public bool AcceptsOneOnOne { get; set; }
     public List<string> AvailableDays { get; set; } = new();
     public List<string> AvailableTimeSlots { get; set; } = new();
-    public int MaxNewClientsPerMonth { get; set; }
-    public decimal SessionPriceMin { get; set; }
-    public decimal SessionPriceMax { get; set; }
-    public int TravelRadiusMiles { get; set; }
+    public decimal SessionPrice { get; set; }
     public bool OffersVirtualSessions { get; set; }
     public bool OffersInPersonSessions { get; set; }
     public List<string> SuccessStories { get; set; } = new();
@@ -169,10 +163,7 @@ public class UpdateCoachMatchProfileRequest
     public bool AcceptsOneOnOne { get; set; }
     public List<string> AvailableDays { get; set; } = new();
     public List<string> AvailableTimeSlots { get; set; } = new();
-    public int MaxNewClientsPerMonth { get; set; }
-    public decimal SessionPriceMin { get; set; }
-    public decimal SessionPriceMax { get; set; }
-    public int TravelRadiusMiles { get; set; }
+    public decimal SessionPrice { get; set; }
     public bool OffersVirtualSessions { get; set; }
     public bool OffersInPersonSessions { get; set; }
     public List<string> SuccessStories { get; set; } = new();

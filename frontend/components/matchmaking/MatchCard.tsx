@@ -73,7 +73,7 @@ export default function MatchCard({ match, onInteract, compact = false }: MatchC
       <div className="grid grid-cols-2 gap-3 mb-4">
         <div className="flex items-center text-sm text-gray-600">
           <DollarSign className="w-4 h-4 mr-2" />
-          ${coach.sessionPriceMin}-${coach.sessionPriceMax}
+          ${coach.sessionPrice}
         </div>
         <div className="flex items-center text-sm text-gray-600">
           <Award className="w-4 h-4 mr-2" />
