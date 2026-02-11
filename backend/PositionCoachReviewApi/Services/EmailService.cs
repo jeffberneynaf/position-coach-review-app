@@ -33,6 +33,17 @@ public class EmailService : IEmailService
         await SendEmailAsync(toEmail, subject, body);
     }
 
+    public async Task SendPasswordResetEmailAsync(string toEmail, string firstName, string resetToken)
+    {
+        var frontendUrl = _configuration["Frontend:Url"] ?? "http://localhost:3000";
+        var resetLink = $"{frontendUrl}/reset-password?token={resetToken}";
+
+        var subject = "Reset Your Password - Position Coach Review";
+        var body = GeneratePasswordResetEmailHtml(firstName, resetLink);
+
+        await SendEmailAsync(toEmail, subject, body);
+    }
+
     private async Task SendEmailAsync(string toEmail, string subject, string htmlBody)
     {
         try
@@ -135,6 +146,45 @@ public class EmailService : IEmailService
             <p>You can now log in and start exploring coaches or managing your profile.</p>
             <p>If you have any questions or need assistance, feel free to reach out to our support team.</p>
             <p>Thank you for joining us!</p>
+        </div>
+        <div class='footer'>
+            <p>&copy; {DateTime.UtcNow.Year} Position Coach Review. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>";
+    }
+
+    private string GeneratePasswordResetEmailHtml(string firstName, string resetLink)
+    {
+        return $@"
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+        .header {{ background-color: #dc2626; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; }}
+        .content {{ background-color: #f9fafb; padding: 30px; border-radius: 0 0 5px 5px; }}
+        .button {{ display: inline-block; background-color: #dc2626; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }}
+        .footer {{ text-align: center; margin-top: 30px; color: #6b7280; font-size: 12px; }}
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <div class='header'>
+            <h1>Reset Your Password</h1>
+        </div>
+        <div class='content'>
+            <p>Hi {firstName},</p>
+            <p>We received a request to reset your password. Click the button below to create a new password:</p>
+            <p style='text-align: center;'>
+                <a href='{resetLink}' class='button'>Reset Password</a>
+            </p>
+            <p>Or copy and paste this link into your browser:</p>
+            <p style='word-break: break-all; color: #dc2626;'>{resetLink}</p>
+            <p>This link will expire in 1 hour.</p>
+            <p><strong>If you didn't request a password reset, please ignore this email.</strong> Your password will remain unchanged.</p>
         </div>
         <div class='footer'>
             <p>&copy; {DateTime.UtcNow.Year} Position Coach Review. All rights reserved.</p>

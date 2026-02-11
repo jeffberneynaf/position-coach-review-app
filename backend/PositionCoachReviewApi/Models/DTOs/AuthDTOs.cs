@@ -134,3 +134,26 @@ public class ChangePasswordRequest
     [Compare("NewPassword", ErrorMessage = "Passwords do not match")]
     public string ConfirmNewPassword { get; set; } = string.Empty;
 }
+
+public class ForgotPasswordRequest
+{
+    [Required]
+    [EmailAddress]
+    public string Email { get; set; } = string.Empty;
+}
+
+public class ResetPasswordRequest
+{
+    [Required]
+    public string Token { get; set; } = string.Empty;
+    
+    [Required]
+    [MinLength(8, ErrorMessage = "Password must be at least 8 characters long")]
+    [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$", 
+        ErrorMessage = "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&#)")]
+    public string NewPassword { get; set; } = string.Empty;
+    
+    [Required]
+    [Compare("NewPassword", ErrorMessage = "Passwords do not match")]
+    public string ConfirmNewPassword { get; set; } = string.Empty;
+}

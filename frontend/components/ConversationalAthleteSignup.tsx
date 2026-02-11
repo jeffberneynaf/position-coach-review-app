@@ -231,6 +231,7 @@ export default function ConversationalAthleteSignup({ onSuccess }: Conversationa
       await registerUser({
         email: formData.email,
         password: formData.password,
+        confirmPassword: formData.password,
         firstName: formData.firstName,
         lastName: formData.lastName,
         athleteName: formData.athleteName,

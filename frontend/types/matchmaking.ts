@@ -68,9 +68,7 @@ export interface CoachMatchProfile {
   availableDays: string[];
   availableTimeSlots: string[];
   maxNewClientsPerMonth: number;
-  sessionPriceMin: number;
-  sessionPriceMax: number;
-  travelRadiusMiles: number;
+  sessionPrice: number;
   offersVirtualSessions: boolean;
   offersInPersonSessions: boolean;
   successStories: string[];

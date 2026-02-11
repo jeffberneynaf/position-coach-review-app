@@ -366,4 +366,79 @@ public class AuthController : ControllerBase
 
         return BadRequest(new { message = "Invalid user type" });
     }
+
+    [HttpPost("forgot-password")]
+    public async Task<ActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+    {
+        // Look for user in both User and Coach tables
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+        var coach = await _context.Coaches.FirstOrDefaultAsync(c => c.Email == request.Email);
+
+        // Always return success to prevent email enumeration
+        if (user == null && coach == null)
+        {
+            return Ok(new { message = "If an account with that email exists, a password reset link has been sent." });
+        }
+
+        var resetToken = GenerateVerificationToken();
+        var resetExpiry = DateTime.UtcNow.AddHours(1);
+
+        if (user != null)
+        {
+            user.PasswordResetToken = resetToken;
+            user.PasswordResetTokenExpiry = resetExpiry;
+            user.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+            
+            await _emailService.SendPasswordResetEmailAsync(user.Email, user.FirstName, resetToken);
+        }
+        else if (coach != null)
+        {
+            coach.PasswordResetToken = resetToken;
+            coach.PasswordResetTokenExpiry = resetExpiry;
+            coach.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+            
+            await _emailService.SendPasswordResetEmailAsync(coach.Email, coach.FirstName, resetToken);
+        }
+
+        return Ok(new { message = "If an account with that email exists, a password reset link has been sent." });
+    }
+
+    [HttpPost("reset-password")]
+    public async Task<ActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+    {
+        // Look for user with valid reset token
+        var user = await _context.Users.FirstOrDefaultAsync(u => 
+            u.PasswordResetToken == request.Token && 
+            u.PasswordResetTokenExpiry > DateTime.UtcNow);
+
+        var coach = await _context.Coaches.FirstOrDefaultAsync(c => 
+            c.PasswordResetToken == request.Token && 
+            c.PasswordResetTokenExpiry > DateTime.UtcNow);
+
+        if (user == null && coach == null)
+        {
+            return BadRequest(new { message = "Invalid or expired reset token" });
+        }
+
+        if (user != null)
+        {
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+            user.PasswordResetToken = null;
+            user.PasswordResetTokenExpiry = null;
+            user.UpdatedAt = DateTime.UtcNow;
+        }
+        else if (coach != null)
+        {
+            coach.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+            coach.PasswordResetToken = null;
+            coach.PasswordResetTokenExpiry = null;
+            coach.UpdatedAt = DateTime.UtcNow;
+        }
+
+        await _context.SaveChangesAsync();
+
+        return Ok(new { message = "Password has been reset successfully. You can now log in with your new password." });
+    }
 }

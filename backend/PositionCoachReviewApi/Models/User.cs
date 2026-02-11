@@ -30,6 +30,11 @@ public class User
     
     public DateTime? EmailVerificationTokenExpiry { get; set; }
     
+    // Password reset fields
+    public string? PasswordResetToken { get; set; }
+    
+    public DateTime? PasswordResetTokenExpiry { get; set; }
+    
     // Navigation property for submitted reviews
     public ICollection<Review> Reviews { get; set; } = new List<Review>();
     

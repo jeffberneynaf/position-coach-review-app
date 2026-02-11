@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PositionCoachReviewApi.Data;
 
@@ -10,9 +11,11 @@ using PositionCoachReviewApi.Data;
 namespace PositionCoachReviewApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260211035315_AddPasswordReset")]
+    partial class AddPasswordReset
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.1");
@@ -191,12 +194,6 @@ namespace PositionCoachReviewApi.Migrations
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PasswordResetToken")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("PasswordResetTokenExpiry")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PhoneNumber")
